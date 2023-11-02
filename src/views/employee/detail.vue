@@ -3,7 +3,7 @@
     <div class="app-container">
       <div class="edit-form">
         <el-form ref="userForm" label-width="220px" :model="FormData" :rules="rules">
-          <!-- 姓名 部门 -->
+          <!-- 姓名 -->
           <el-row>
             <el-col :span="12">
               <el-form-item label="姓名" prop="username">
@@ -12,15 +12,16 @@
             </el-col>
 
           </el-row>
-          <!-- 工号 入职时间 -->
+          <!-- 工号 -->
           <el-row>
             <el-col :span="12">
               <el-form-item label="工号" prop="workNumber">
-                <el-input v-model="FormData.workNumber" size="mini" class="inputW" />
+                <!-- 工号禁用  disabled(禁用)  -->
+                <el-input v-model="FormData.workNumber" disabled size="mini" class="inputW" />
               </el-form-item>
             </el-col>
           </el-row>
-          <!--手机 聘用形式  -->
+          <!--手机  -->
           <el-row>
             <el-col :span="12">
               <el-form-item label="手机" prop="mobile">
@@ -28,6 +29,7 @@
               </el-form-item>
             </el-col>
           </el-row>
+          <!-- 部门 -->
           <el-row>
             <el-col :span="12">
               <el-form-item label="部门" prop="departmentId">
@@ -35,20 +37,32 @@
               </el-form-item>
             </el-col>
           </el-row>
+          <!--聘用形式  -->
           <el-row>
             <el-col :span="12">
               <el-form-item label="聘用形式" prop="formOfEmployment">
-                <el-select v-model="FormData.formOfEmployment" size="mini" class="inputW" />
+                <el-select v-model="FormData.formOfEmployment" placeholder="请输入" size="mini" class="inputW">
+                  <el-option label="正式" :value="1" />
+                  <el-option label="非正式" :value="2" />
+                </el-select>
               </el-form-item>
             </el-col>
           </el-row>
+          <!-- 入职时间 -->
           <el-row>
             <el-col :span="12">
               <el-form-item label="入职时间" prop="timeOfEntry">
-                <el-date-picker v-model="FormData.timeOfEntry" size="mini" type="date" value-format="yyyy-MM-dd" class="inputW" />
+                <el-date-picker
+                  v-model="FormData.timeOfEntry"
+                  size="mini"
+                  type="date"
+                  value-format="yyyy-MM-dd"
+                  class="inputW"
+                />
               </el-form-item>
             </el-col>
           </el-row>
+          <!-- 转正时间 -->
           <el-row>
             <el-col :span="12">
               <el-form-item label="转正时间" prop="correctionTime">
@@ -67,7 +81,7 @@
           <!-- 保存个人信息 -->
           <el-row type="flex">
             <el-col :span="12" style="margin-left:220px">
-              <el-button size="mini" type="primary">保存更新</el-button>
+              <el-button size="mini" type="primary" @click="saveData">保存更新</el-button>
             </el-col>
           </el-row>
         </el-form>
@@ -100,7 +114,8 @@ export default {
         mobile: [
           { required: true, message: '请输入手机号', trigger: 'blur' },
           { //   pattern 正则表达式
-            pattern: /^1[3-9]\d{9}$/, message: '手机号格式不正确', trigger: 'blur' }
+            pattern: /^1[3-9]\d{9}$/, message: '手机号格式不正确', trigger: 'blur'
+          }
         ],
         formOfEmployment: [{ required: true, message: '请选择聘用形式', trigger: 'blur' }],
         departmentId: [{ required: true, message: '请选择部门', trigger: 'blur' }],
