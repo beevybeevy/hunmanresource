@@ -10,6 +10,21 @@
           placeholder="输入员工姓名全员搜索"
         />
         <!-- 树形组件 -->
+        <el-tree
+          :data="depts"
+          :props="defaultProps"
+          default-expand-all
+          :expand-on-click-node="false"
+          highlight-current
+        >
+          <!-- 节点结构 -->
+          <!-- v-slot="{ node, data }" 只能作用在template -->
+          <template v-slot="{ data }">
+            <el-row style="width:100%;height:40px" type="flex" justify="space-between" align="middle">
+              <el-col>{{ data.name }}</el-col>
+            </el-row>
+          </template>
+        </el-tree>
       </div>
       <div class="right">
         <el-row class="opeate-tools" type="flex" justify="end">
@@ -18,16 +33,96 @@
           <el-button size="mini">excel导出</el-button>
         </el-row>
         <!-- 表格组件 -->
+        <el-table :data="list">
+          <el-table-column prop="staffPhoto" align="center" label="头像" />
+          <el-table-column prop="username" label="姓名" />
+          <el-table-column prop="mobile" label="手机号" sortable />
+          <el-table-column prop="workNumber" label="工号" sortable />
+          <el-table-column prop="formOfEmployment" label="聘用形式" />
+          <el-table-column prop="departmentName" label="部门" />
+          <el-table-column prop="timeOfEntry" label="入职时间" sortable />
+          <el-table-column label="操作" width="280px">
+            <template>
+              <el-button size="mini" type="text">查看</el-button>
+              <el-button size="mini" type="text">角色</el-button>
+              <el-button size="mini" type="text">删除</el-button>
+            </template>
+          </el-table-column>
+        </el-table>
         <!-- 分页 -->
+        <el-row style="height: 60px" align="middle" type="flex" justify="end">
+          <el-pagination
+            layout="total,prev, pager, next"
+            :total="total"
+            :current-page="queryParams.page"
+            :page-size="queryParams.pagesize"
+            @current-change="changePage"
+          />
+        </el-row>
       </div>
     </div>
   </div>
 </template>
 
 <script>
+import { getDepartment, transListToTreeData, getEmployeeList } from '@/api/department'
 export default {
-  name: 'Employee'
+  name: 'Department',
+  data() {
+    return {
+      depts: [],
+      list: [],
+      defaultProps: {
+        children: 'children',
+        label: 'name'
+      },
+      // 存储查询参数
+      queryParams: {
+        departmentId: null,
+        page: 1, // 当前页码
+        pagesize: 10,
+        keyword: ''
+      },
+      total: 0 // 记录员工的总数
+    }
+  },
+  created() {
+    this.getDepartment() // 调取接口
+  },
+  methods: {
+    async getDepartment() {
+      // const result = await getDepartment()
+      this.depts = transListToTreeData(await getDepartment(), 0)
+      this.queryParams.departmentId = this.depts[0].id
+      // 设置选中节点
+      // 数组渲染
+      this.$nextTick(() => {
+        // 树渲染完
+        // this.$refs.deptTree.setCurrentKey(this.queryParams.departmentId)
+      })
+      this.getEmployeeList()
+    },
+    // 获取右侧数据
+    selectNode(node) {
+      this.queryParams.departmentId = node.id // 重新记录了参数
+      this.queryParams.page = 1 // 设置第一页
+      this.getEmployeeList()
+    },
+    // 获取员工列表
+    async getEmployeeList() {
+      const { rows } = await getEmployeeList(this.queryParams)
+      this.list = rows
+      // this.total = total
+      this.loding = false
+    },
+    // 切换页码
+    changePage(newPage) {
+      this.queryParams.page = newPage // 赋值新页码
+      this.getEmployeeList() // 查询数据
+    }
+  }
 }
+
 </script>
 
 <style lang="scss" scoped>
