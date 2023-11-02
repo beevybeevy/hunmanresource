@@ -21,3 +21,11 @@ export function transListToTreeData(list, rootValue) {
   })
   return arr
 }
+
+// 获取员工列表
+export function getEmployeeList(params) {
+  return request({
+    url: '/sys/user',
+    params // 地址参数 查询参数
+  })
+}
