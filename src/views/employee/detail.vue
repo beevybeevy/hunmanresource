@@ -2,12 +2,12 @@
   <div class="dashboard-container">
     <div class="app-container">
       <div class="edit-form">
-        <el-form ref="userForm" label-width="220px">
+        <el-form ref="userForm" label-width="220px" :model="FormData" :rules="rules">
           <!-- 姓名 部门 -->
           <el-row>
             <el-col :span="12">
               <el-form-item label="姓名" prop="username">
-                <el-input v-model="userinfo.username" size="mini" class="inputW" />
+                <el-input v-model="FormData.username" size="mini" class="inputW" />
               </el-form-item>
             </el-col>
 
@@ -16,7 +16,7 @@
           <el-row>
             <el-col :span="12">
               <el-form-item label="工号" prop="workNumber">
-                <el-input size="mini" class="inputW" />
+                <el-input v-model="FormData.workNumber" size="mini" class="inputW" />
               </el-form-item>
             </el-col>
           </el-row>
@@ -24,7 +24,7 @@
           <el-row>
             <el-col :span="12">
               <el-form-item label="手机" prop="mobile">
-                <el-input v-model="userinfo.mobile" size="mini" class="inputW" />
+                <el-input v-model="FormData.mobile" size="mini" class="inputW" />
               </el-form-item>
             </el-col>
           </el-row>
@@ -38,28 +38,28 @@
           <el-row>
             <el-col :span="12">
               <el-form-item label="聘用形式" prop="formOfEmployment">
-                <el-select size="mini" class="inputW" />
+                <el-select v-model="FormData.formOfEmployment" size="mini" class="inputW" />
               </el-form-item>
             </el-col>
           </el-row>
           <el-row>
             <el-col :span="12">
               <el-form-item label="入职时间" prop="timeOfEntry">
-                <el-date-picker size="mini" type="date" value-format="yyyy-MM-dd" class="inputW" />
+                <el-date-picker v-model="FormData.timeOfEntry" size="mini" type="date" value-format="yyyy-MM-dd" class="inputW" />
               </el-form-item>
             </el-col>
           </el-row>
           <el-row>
             <el-col :span="12">
-              <el-form-item label="转正时间" prop="timeOfEntry">
-                <el-date-picker size="mini" type="date" class="inputW" />
+              <el-form-item label="转正时间" prop="correctionTime">
+                <el-date-picker v-model="FormData.correctionTime" size="mini" type="date" class="inputW" />
               </el-form-item>
             </el-col>
           </el-row>
           <!-- 员工照片 -->
           <el-row>
             <el-col :span="12">
-              <el-form-item label="员工头像" prop="correctionTime">
+              <el-form-item label="员工头像" prop="">
                 <!-- 放置上传图片 -->
               </el-form-item>
             </el-col>
@@ -82,16 +82,48 @@
 export default {
   data() {
     return {
-      userInfo: {
-        username: '', // 姓名
-        workNumber: '', // 工号
+      FormData: {
+        username: '', // 用户名
         mobile: '', // 手机号
+        workNumber: '', // 工号
         formOfEmployment: null, // 聘用形式
-        // departmentId: null, // 部门id
         timeOfEntry: '', // 入职时间
         correctionTime: '' // 转正时间
+      },
+      rules: {
+        // 姓名校验
+        username: [
+          { required: true, message: '请输入姓名', trigger: 'blur' },
+          { min: 1, max: 4, message: '姓名为1-4位' }
+        ],
+        // 手机号校验
+        mobile: [
+          { required: true, message: '请输入手机号', trigger: 'blur' },
+          { //   pattern 正则表达式
+            pattern: /^1[3-9]\d{9}$/, message: '手机号格式不正确', trigger: 'blur' }
+        ],
+        formOfEmployment: [{ required: true, message: '请选择聘用形式', trigger: 'blur' }],
+        departmentId: [{ required: true, message: '请选择部门', trigger: 'blur' }],
+        timeOfEntry: [{ required: true, message: '请选择入职时间', trigger: 'blur' }],
+        correctionTime: [{
+          required: true, message: '请选择转正时间', trigger: 'blur'
+        }, {
+          validator: (rule, value, callback) => {
+            if (this.FormData.timeOfEntry) {
+              if (new Date(this.FormData.timeOfEntry) > new Date(value)) {
+                callback(new Error('转正时间不能小于入职时间'))
+                return
+              }
+            }
+            callback()
+          }
+        }]
       }
-
+    }
+  },
+  methods: {
+    saveData() {
+      this.$refs.userForm.validate()
     }
   }
 }
