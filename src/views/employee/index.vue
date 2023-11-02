@@ -10,6 +10,15 @@
           placeholder="输入员工姓名全员搜索"
         />
         <!-- 树形组件 -->
+        <el-tree default-expand-all :data="depts" :props="defaultProps">
+          <!-- 节点结构 -->
+          <!-- v-slot="{ node, data }" 只能作用在template -->
+          <template v-slot="{ data }">
+            <el-row style="width:100%;height:40px" type="flex" justify="space-between" align="middle">
+              <el-col>{{ data.name }}</el-col>
+            </el-row>
+          </template>
+        </el-tree>
       </div>
       <div class="right">
         <el-row class="opeate-tools" type="flex" justify="end">
@@ -25,8 +34,27 @@
 </template>
 
 <script>
+import { getDepartment, transListToTreeData } from '@/api/department'
 export default {
-  name: 'Employee'
+  name: 'Department',
+  data() {
+    return {
+      depts: [],
+      defaultProps: {
+        children: 'children',
+        label: 'name'
+      }
+    }
+  },
+  created() {
+    this.getDepartment() // 调取接口
+  },
+  methods: {
+    async getDepartment() {
+      const result = await getDepartment()
+      this.depts = transListToTreeData(result, 0)
+    }
+  }
 }
 </script>
 
