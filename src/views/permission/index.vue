@@ -1,6 +1,5 @@
 <template>
   <div class="container">
-
     <div class="app-container">
       <el-button type="primary">主要按钮</el-button>
       <el-table
@@ -11,38 +10,48 @@
         <el-table-column
           prop="name"
           label="名称"
-          width="180"
         />
         <el-table-column
-          prop="identification"
+          prop="code"
           label="标识"
-          width="180"
         />
         <el-table-column
-          prop="describe"
+          prop="description"
           label="描述"
         />
-        <el-table-column>     
-          <el-button type="text" size="small" @click="handleClick(scope.row)">查看</el-button>
-          <el-button type="text" size="small">编辑</el-button>
+        <el-table-column label="操作">
+          <template slot-scope="scope">
+            <el-button type="text" size="small">添加</el-button>
+            <el-button type="text" size="small">编辑</el-button>
+            <el-button
+              type="text"
+              size="small"
+              @click="del(scope.row.id)"
+            >删除</el-button>
+          </template>
         </el-table-column>
-        <!-- <template slot-scope="scope">
-        </template> -->
       </el-table>
     </div>
   </div>
 </template>
 <script>
+import { getPermissions, deletePermissions } from '@/api/table'
+
 export default {
   name: 'Permission',
   data() {
     return {
-      tableData: [{
-        identification: '2016-05-02',
-        name: '王小虎',
-        describe: '上海市普陀区金沙江路 1518 弄',
-        operation: '添加，删除'
-      }]
+      tableData: []
+    }
+  },
+  async created() {
+    const res = await getPermissions()
+    this.tableData = res
+  },
+  methods: {
+    del(id) {
+      deletePermissions(id)
+      getPermissions()
     }
   }
 }

@@ -7,3 +7,13 @@ export function getList(params) {
     params
   })
 }
+
+// 获取权限
+export function getPermissions() {
+  return request.get('/sys/permission')
+}
+
+// 删除权限
+export function deletePermissions(id) {
+  return request.delete(`/sys/permission/${id}`)
+}
