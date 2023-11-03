@@ -61,7 +61,9 @@
             <template v-slot="{ row }">
               <el-button size="mini" type="text" @click="$router.push(`/employee/detail/${row.id}`)">查看</el-button>
               <el-button size="mini" type="text">角色</el-button>
-              <el-button size="mini" type="text">删除</el-button>
+              <el-popconfirm title="确认删除该行数据吗？" @onConfirm="confirmDel(row.id)">
+                <el-button slot="reference" style="margin-left:10px" size="mini" type="text">删除</el-button>
+              </el-popconfirm>
             </template>
           </el-table-column>
         </el-table>
@@ -79,7 +81,7 @@
     </div>
   </div></template>
 <script>
-import { getDepartment, transListToTreeData, getEmployeeList } from '@/api/department'
+import { getDepartment, transListToTreeData, getEmployeeList, delEmployee } from '@/api/department'
 
 export default {
   name: 'Department',
@@ -150,6 +152,13 @@ export default {
       this.timer = setTimeout(() => {
         this.getEmployeeList()
       }, 300)
+    },
+    // 删除员工
+    async confirmDel(id) {
+      await delEmployee(id)
+      if (this.list.length === 1 && this.queryParams.page > 1) this.queryParams.page--
+      this.getEmployeeList()
+      this.$message.success('删除员工成功')
     }
   }
 }
