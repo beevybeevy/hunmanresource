@@ -160,12 +160,12 @@ export default {
           // 编辑模式
           if (this.$route.params.id) {
             // 编辑模式
-            await editEmployee(this.userInfo)
+            await editEmployee(this.FormData)
             this.$message.success('更新员工成功')
           } else {
             // 新增模式
             // 校验通过
-            await addEmployee(this.userInfo)
+            await addEmployee(this.FormData)
             this.$message.success('新增员工成功')
           }
           this.$router.push('/employee')
