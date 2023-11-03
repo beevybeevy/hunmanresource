@@ -9,6 +9,7 @@
           prefix-icon="el-icon-search"
           size="small"
           placeholder="输入员工姓名全员搜索"
+          @input="changeValue"
         />
         <!-- 树形组件 -->
         <el-tree
@@ -75,10 +76,8 @@
           />
         </el-row>
       </div>
-
     </div>
   </div></template>
-
 <script>
 import { getDepartment, transListToTreeData, getEmployeeList } from '@/api/department'
 
@@ -96,11 +95,11 @@ export default {
         departmentId: null,
         page: 1, // 当前页码
         pagesize: 10,
+        // 设置关键字参数
         keyword: ''
       },
       total: 0, // 记录员工的总数
       list: []
-
     }
   },
   created() {
@@ -140,11 +139,17 @@ export default {
       this.total = total
       // this.loding = false
     },
-
     // 切换页码
     changePage(newPage) {
       this.queryParams.page = newPage // 赋值新页码
       this.getEmployeeList() // 查询数据
+    },
+    // 模糊查询
+    changeValue() {
+      clearTimeout(this.timer)// 防抖处理
+      this.timer = setTimeout(() => {
+        this.getEmployeeList()
+      }, 300)
     }
   }
 }
