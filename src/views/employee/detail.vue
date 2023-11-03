@@ -34,6 +34,7 @@
             <el-col :span="12">
               <el-form-item label="部门" prop="departmentId">
                 <!-- 放置及联部门组件 -->
+                <select-tree v-model="FormData.departmentId" class="inputW" />
               </el-form-item>
             </el-col>
           </el-row>
@@ -92,14 +93,17 @@
 </template>
 
 <script>
-
+import { addEmployee } from '@/api/department'
+import SelectTree from './components/select-tree.vue'
 export default {
+  components: { SelectTree },
   data() {
     return {
       FormData: {
         username: '', // 用户名
         mobile: '', // 手机号
         workNumber: '', // 工号
+        departmentId: '',
         formOfEmployment: null, // 聘用形式
         timeOfEntry: '', // 入职时间
         correctionTime: '' // 转正时间
@@ -138,7 +142,14 @@ export default {
   },
   methods: {
     saveData() {
-      this.$refs.userForm.validate()
+      this.$refs.userForm.validate(async isOK => {
+        if (isOK) {
+          // 校验通过
+          await addEmployee(this.FormData)
+          this.$message.success('新增员工成功')
+          this.$router.push('/employee')
+        }
+      })
     }
   }
 }
