@@ -38,3 +38,12 @@ export function addEmployee(data) {
     data
   })
 }
+
+// 导出excel
+export function exportEmployeeExecel() {
+  return request({
+    url: '/sys/user/export',
+    // 改变接收数据的类型
+    responseType: 'blob' // 使用blob接收二进制文件流
+  })
+}
