@@ -154,6 +154,7 @@ export default {
     async getEmployeeDetail() {
       this.FormData = await getEmployeeDetail(this.$route.params.id)
     },
+
     saveData() {
       this.$refs.userForm.validate(async isOK => {
         if (isOK) {
