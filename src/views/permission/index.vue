@@ -76,7 +76,7 @@
   </div>
 </template>
 <script>
-import { getPermissions, deletePermissions } from '@/api/table'
+import { getPermissions, deletePermissions } from '@/api/permission'
 
 export default {
   name: 'Permission',
