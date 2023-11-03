@@ -35,6 +35,16 @@ export function deleteRole(id) {
 
 // 获取编辑角色的信息
 
-export function editRole(id) {
-  return request.get(`/sys/role/${id}`)
+// export function editRole(id) {
+//   return request.get(`/sys/role/${id}`)
+// }
+
+// 更新角色信息
+
+export function editRole(obj) {
+  return request.put(`/sys/role/${obj.id}`, {
+
+    ...obj
+  }
+  )
 }
