@@ -90,7 +90,7 @@ export default {
         children: 'children',
         label: 'name'
       },
-      // 存储查询参数
+      // 存储查询的参数
       queryParams: {
         departmentId: null,
         page: 1, // 当前页码
