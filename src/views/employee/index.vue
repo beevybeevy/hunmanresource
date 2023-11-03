@@ -77,10 +77,16 @@
         </el-row>
       </div>
     </div>
-  </div></template>
+  </div>
+</template>
 <script>
 import FileSaver from 'file-saver'
-import { getDepartment, transListToTreeData, getEmployeeList, exportEmployeeExecel } from '@/api/department'
+import {
+  getDepartment,
+  transListToTreeData,
+  getEmployeeList,
+  exportEmployeeExecel
+} from '@/api/department'
 
 export default {
   name: 'Department',
@@ -193,4 +199,5 @@ export default {
       display: inline-block;
     }
   }
-}</style>
+}
+</style>

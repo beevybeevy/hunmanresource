@@ -24,6 +24,7 @@ service.interceptors.request.use((config) => {
 // 响应拦截器
 service.interceptors.response.use((response) => {
   const { data, message, success } = response.data // 默认json格式
+  // 判断是不是Blob
   if (response.data instanceof Blob) return response.data
   // success表示接口返回的数据正确，例如使用手机号密码登录成功
   if (success) {
