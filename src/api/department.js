@@ -29,3 +29,12 @@ export function getEmployeeList(params) {
     params // 地址参数 查询参数
   })
 }
+
+// 获取新增员工列表
+export function addEmployee(data) {
+  return request({
+    url: '/sys/user',
+    method: 'post',
+    data
+  })
+}
