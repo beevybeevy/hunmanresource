@@ -10,7 +10,6 @@
                 <el-input v-model="FormData.username" size="mini" class="inputW" />
               </el-form-item>
             </el-col>
-
           </el-row>
           <!-- 工号 -->
           <el-row>
