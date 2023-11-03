@@ -38,7 +38,7 @@
             <el-col :span="12">
               <el-form-item label="部门" prop="departmentId">
                 <!-- 放置及联部门组件 -->
-                <select-tree v-model="FormData.departmentId" placeholder="请输入" class="inputW" />
+                <select-tree v-model="FormData.departmentId" placeholder="请输入部门" class="inputW" />
               </el-form-item>
             </el-col>
           </el-row>
