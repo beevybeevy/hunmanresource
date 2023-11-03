@@ -30,11 +30,18 @@ export function getEmployeeList(params) {
   })
 }
 
-// 获取新增员工列表
+// 获取新增员工
 export function addEmployee(data) {
   return request({
     url: '/sys/user',
     method: 'post',
     data
+  })
+}
+
+//  获取员工详情
+export function getEmployeeDetail(id) {
+  return request({
+    url: `/sys/user/${id}`
   })
 }
