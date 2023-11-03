@@ -26,3 +26,15 @@ export function addRole(name, description, state) {
     // state
   })
 }
+
+// 删除角色
+
+export function deleteRole(id) {
+  return request.delete(`/sys/role/${id}`)
+}
+
+// 获取编辑角色的信息
+
+export function editRole(id) {
+  return request.get(`/sys/role/${id}`)
+}

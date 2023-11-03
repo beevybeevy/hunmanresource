@@ -2,16 +2,26 @@
   <div class="container">
     <el-button type="primary" size="mini" @click="dialogFormVisible = true">添加角色</el-button>
     <el-table v-loading="isLoading" :data="tableData" style="width: 100%" border>
-
       <el-table-column prop="id" label="序号" width="180" />
-      <el-table-column prop="name" label="角色" width="180" />
+      <el-table-column prop="name" label="角色" width="180">
+        <template v-slot="{row}">
+          <el-input v-if="row.isEdit" v-model="editData.name" />
+          <span v-else>{{ row.name }}</span>
+        </template>
+      </el-table-column>
       <el-table-column prop="state" label="启用">
         <template v-slot="{ row }">
           <span>{{ row.state === 1 ? '已启用' : '未启用' }}</span>
         </template>
       </el-table-column>
       <el-table-column prop="description" label="描述" />
-      <el-table-column prop="operation" label="操作" />
+      <el-table-column prop="operation" label="操作">
+        <template v-slot="{ row }">
+          <el-button type="text">分配权限</el-button>
+          <el-button type="text" @click="editItem(row)">编辑</el-button>
+          <el-button type="text" @click="deleteItem(row.id)">删除</el-button>
+        </template>
+      </el-table-column>
 
     </el-table>
     <el-pagination
@@ -43,7 +53,7 @@
   </div>
 </template>
 <script>
-import { getRoleList, addRole } from '@/api/role'
+import { getRoleList, addRole, deleteRole, editRole } from '@/api/role'
 export default {
   name: 'Role',
   data() {
@@ -56,15 +66,13 @@ export default {
       dialogFormVisible: false,
       form: {
         name: '',
-        // value: false,
         state: false,
         description: ''
       },
       formLabelWidth: '120px',
-      value: false,
-      rules: {
-        name: [{ required: true, message: '角色名称不能为空', trigger: 'blur' }],
-        description: [{ required: true, message: '角色描述不能为空', trigger: 'blur' }]
+      rules: {},
+      editData: {
+        name: ''
       }
     }
   },
@@ -73,7 +81,11 @@ export default {
   //   console.log(res)
   // }
   async created() {
-    this.renderPage()
+    await this.renderPage()
+    this.rules = {
+      name: [{ required: true, message: '角色名称不能为空', trigger: 'blur' }],
+      description: [{ required: true, message: '角色描述不能为空', trigger: 'blur' }]
+    }
   },
   methods: {
     onPageChange(page) {
@@ -89,12 +101,29 @@ export default {
       this.tableData = res.rows
       this.total = res.total
       this.isLoading = false
+      this.tableData.forEach(item => {
+        this.$set(item, 'isEdit', false)
+      })
     },
     async openDialog() {
       this.form.state === true ? this.form.state = 1 : this.form.state = 0
-      console.log(this.form.description)
+      // console.log(this.form.description)
       await addRole(this.form.name, this.form.description, this.form.state)
       this.dialogFormVisible = false
+    },
+    async deleteItem(id) {
+      // console.log(this.tableData.id)
+      // 先确认再删除，所以要把删除逻辑写在确认里面
+      this.$confirm('确认删除吗').then(async() => {
+        await deleteRole(id)
+        this.renderPage()
+      }).catch()
+    },
+    async editItem(row) {
+      const res = await editRole(row.id)
+      console.log(res)
+      this.editData.name = res.name
+      row.isEdit = true
     }
   }
 
