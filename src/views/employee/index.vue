@@ -71,6 +71,7 @@
             :total="total"
             :current-page="queryParams.page"
             :page-size="queryParams.pagesize"
+            @current-change="changePage"
           />
         </el-row>
       </div>
