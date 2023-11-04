@@ -34,7 +34,7 @@
           <!-- 选框 -->
           <el-table-column
             type="selection"
-            width="55"
+            width="50"
           />
           <el-table-column prop="staffPhoto" align="center" label="头像">
             <template v-slot="{ row }">
