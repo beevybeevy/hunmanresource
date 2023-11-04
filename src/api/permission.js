@@ -11,20 +11,8 @@ export function deletePermissions(id) {
 }
 
 // 新增权限
-export function addPermissions() {
-  return request.post('/sys/permission', {
-    Headers: {
-      'Content-Type': 'application/json'
-    },
-    dada: {
-      name: '',
-      code: '',
-      description: '',
-      type: '',
-      pid: '',
-      enVisible: ''
-    }
-  })
+export function addPermissions(dada) {
+  return request.post('/sys/permission', dada)
 }
 
 // 编辑权限
