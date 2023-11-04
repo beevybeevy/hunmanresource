@@ -43,8 +43,24 @@ export function deleteRole(id) {
 
 export function editRole(obj) {
   return request.put(`/sys/role/${obj.id}`, {
-
     ...obj
   }
   )
+}
+
+// 获取权限点的列表
+export function getPermissionList() {
+  return request.get('/sys/permission')
+}
+
+// 获取角色详情列表，重点是permIds这个返回值
+export function getRoleDetail(id) {
+  return request.get(`/sys/role/${id}`)
+}
+
+export function correctPermission(id, permIds) {
+  return request.put('/sys/role/assignPrem', {
+    id,
+    permIds
+  })
 }
