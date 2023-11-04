@@ -46,7 +46,7 @@
           <el-row>
             <el-col :span="12">
               <el-form-item label="聘用形式" prop="formOfEmployment">
-                <el-select v-model="FormData.formOfEmployment" placeholder="请输入" size="mini" class="inputW">
+                <el-select v-model="FormData.formOfEmployment" placeholder="请输入聘用形式" size="mini" class="inputW">
                   <el-option label="正式" :value="1" />
                   <el-option label="非正式" :value="2" />
                 </el-select>
