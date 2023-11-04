@@ -22,14 +22,6 @@
           highlight-current
           @node-click="onNodeClick"
         />
-        <!-- 节点结构 -->
-        <!-- v-slot="{ node, data }" 只能作用在template -->
-        <!-- <template v-slot="{ data }">
-            <el-row style="width:100%;height:40px" type="flex" justify="space-between" align="middle">
-              <el-col>{{ data.name }}</el-col>
-            </el-row>
-          </template>
-        </el-tree> -->
       </div>
       <div class="right">
         <el-row class="opeate-tools" type="flex" justify="end">
@@ -39,6 +31,11 @@
         </el-row>
         <!-- 表格组件 -->
         <el-table :data="list">
+          <!-- 选框 -->
+          <el-table-column
+            type="selection"
+            width="55"
+          />
           <el-table-column prop="staffPhoto" align="center" label="头像">
             <template v-slot="{ row }">
               <el-avatar v-if="row.staffPhoto" :src="row.staffPhoto" :size="30" />
