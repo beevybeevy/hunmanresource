@@ -22,23 +22,20 @@
           highlight-current
           @node-click="onNodeClick"
         />
-        <!-- 节点结构 -->
-        <!-- v-slot="{ node, data }" 只能作用在template -->
-        <!-- <template v-slot="{ data }">
-            <el-row style="width:100%;height:40px" type="flex" justify="space-between" align="middle">
-              <el-col>{{ data.name }}</el-col>
-            </el-row>
-          </template>
-        </el-tree> -->
       </div>
       <div class="right">
         <el-row class="opeate-tools" type="flex" justify="end">
           <el-button size="mini" type="primary" @click="$router.push('/employee/detail')">添加员工</el-button>
-          <el-button size="mini">excel导入</el-button>
+          <el-button size="mini" @click="showDialog=true">excel导入</el-button>
           <el-button size="mini" @click="exportEmployeeExecel">excel导出</el-button>
         </el-row>
         <!-- 表格组件 -->
         <el-table :data="list">
+          <!-- 选框 -->
+          <el-table-column
+            type="selection"
+            width="50"
+          />
           <el-table-column prop="staffPhoto" align="center" label="头像">
             <template v-slot="{ row }">
               <el-avatar v-if="row.staffPhoto" :src="row.staffPhoto" :size="30" />
@@ -79,8 +76,11 @@
         </el-row>
       </div>
     </div>
+    <!-- 导入弹框 -->
+    <ImportExcel :show-excel-dialog.sync="showDialog" />
   </div>
 </template>
+
 <script>
 import FileSaver from 'file-saver'
 import {
@@ -90,18 +90,25 @@ import {
   exportEmployeeExecel
 } from '@/api/department'
 
+// 导入员工导入组件
+import ImportExcel from './components/import-excel.vue'
 export default {
   name: 'Department',
+  components: {
+    ImportExcel
+  },
   data() {
     return {
+      showDialog: false,
       depts: [],
+      // 树形默认属性值
       defaultProps: {
         children: 'children',
         label: 'name'
       },
-      // 存储查询的参数
+      // 节点存储查询的参数
       queryParams: {
-        departmentId: null,
+        departmentId: null, // 记录部门id
         page: 1, // 当前页码
         pagesize: 10,
         // 设置关键字参数
@@ -172,6 +179,7 @@ export default {
       const result = await exportEmployeeExecel()
       FileSaver.saveAs(result, '员工表.xlsx') // 下载文件
     }
+
   }
 }
 

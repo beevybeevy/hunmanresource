@@ -1,5 +1,4 @@
 import request from '@/utils/request'
-
 // 获取组织架构数据
 export function getDepartment() {
   return request({
@@ -69,5 +68,14 @@ export function exportEmployeeExecel() {
     url: '/sys/user/export',
     // 改变接收数据的类型
     responseType: 'blob' // 使用blob接收二进制文件流
+  })
+}
+
+// 封装api 下载导入模板的接口
+export function getExportTemplate() {
+  return request({
+    url: '/sys/user/import/template',
+    // 改变接收数据的类型
+    responseType: 'blob' // 二进制文件流
   })
 }
