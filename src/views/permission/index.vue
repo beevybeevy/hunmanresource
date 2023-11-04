@@ -2,36 +2,29 @@
   <div class="container">
     <div class="app-container">
       <el-button type="primary" @click="addorechoLevel('add')">添加权限</el-button>
-      <el-table default-expand-all :data="tableData" row-key="id">
+
+      <el-table border :props="defaultProps" :data="tableData" row-key="id" default-expand-all :tree-props="{ children: 'children', hasChildren: 'hasChildren' }">
         <el-table-column prop="name" label="名称" />
         <el-table-column prop="code" label="标识" />
         <el-table-column prop="description" label="描述" />
         <el-table-column label="操作">
           <template v-slot="{ row }">
-            <el-button v-if="row.type === 1" type="text" size="small" @click="addorechoLevel()">添加</el-button>
-            <el-button type="text" size="small" @click="addorechoLevel('eitm', row.id)">编辑</el-button>
-            <el-button
-              ref="delPermissions"
-              type="text"
-              size="small"
-              @click="handleDelete(row.id)"
-            >删除</el-button>
+            <el-button v-if="row.type === 1" type="text" @click="addorechoLevel('add', row.id, 2)">添加</el-button>
+            <el-button type="text" @click="addorechoLevel('eitm', row.id)">编辑</el-button>
+            <el-button ref="delPermissions" type="text" @click="handleDelete(row.id)">删除</el-button>
           </template>
         </el-table-column>
       </el-table>
 
       <!-- 删除弹出框 -->
-      <el-dialog
-        :visible.sync="dialogVisible"
-        width="30%"
-        :before-close="handleClose"
-      >
+      <el-dialog :visible.sync="dialogVisible" width="30%" :before-close="handleClose">
         <span>确定要删除该数据吗</span>
         <span slot="footer" class="dialog-footer">
           <el-button @click="dialogVisible = false">取 消</el-button>
           <el-button type="primary" @click="del()">确 定</el-button>
         </span>
       </el-dialog>
+
       <!-- 新增、编辑弹出框 -->
       <el-dialog :title="titleItem" :visible.sync="dialogFormVisible">
         <el-form ref="formDataList" :model="formData" :rules="rules">
@@ -53,6 +46,7 @@
           <el-button @click="dialogFormVisible = false">取 消</el-button>
         </div>
       </el-dialog>
+
     </div>
   </div>
 </template>
@@ -65,6 +59,10 @@ export default {
     return {
       // 接收后端传过来的数组
       tableData: [],
+      defaultProps: {
+        children: 'children',
+        label: 'name'
+      },
       // 控制删除对话框显示隐藏
       dialogVisible: false,
       formData: {
@@ -83,28 +81,43 @@ export default {
       dialogFormVisible: false,
       // 单个列所占据尺寸
       formLabelWidth: '120px',
-      // 表单自动验证
-      rules: {
-        name: [
-          { required: true, message: '权限名称不能为空', trigger: 'blur' }
-        ],
-        code: [
-          { required: true, message: '权限标识不能为空', trigger: 'blur' }
-        ]
-      },
       // 用来记录当前点击的用户id
       currentUserId: null,
       // 判断点击的是新增还是编辑
       actionType: ''
     }
   },
-  async created() {
-    // 获取数据
-    const res = await getPermissions()
-    // 渲染数据
-    this.tableData = res
+  created() {
+    this.treeListForm()
+
+    // 表单自动验证
+    this.rules = {
+      name: [{ required: true, message: '权限名称不能为空', trigger: 'blur' }],
+      code: [{ required: true, message: '权限标识不能为空', trigger: 'blur' }]
+    }
   },
   methods: {
+    // 树
+    async treeListForm() {
+      // 获取数据
+      this.tableData = await getPermissions()
+      // 渲染树状数据
+      this.tableData = this.getDepartment(this.tableData)
+    },
+    // 树状数据
+    getDepartment(list, id = 0) {
+      const arr = []
+      list.forEach(item => {
+        if (item.pid === id) {
+          // 找到了匹配的节点
+          // 当前节点的id 和 当前节点的子节点的pid是想等的
+          const children = this.getDepartment(list, item.id) // 找到的节点的子节点
+          item.children = children // 将子节点赋值给当前节点
+          arr.push(item)
+        }
+      })
+      return arr
+    },
     // 弹出框的删除
     async del() {
       deletePermissions(this.formData.id)
@@ -121,11 +134,15 @@ export default {
       this.formData.id = id
     },
     // 新增和编辑
-    async addorechoLevel(actionType, id) {
+    async addorechoLevel(actionType, id, type) {
       // 清除表单校验
       this.$refs.formDataList?.resetFields()
       // 判断是新增还是编辑
       if (actionType === 'add') {
+        if (type) {
+          this.formData.type = type
+          this.formData.pid = id
+        }
         // 清空表单
         this.formData.name = ''
         this.formData.code = ''
@@ -135,6 +152,7 @@ export default {
         // 清空id的值
         this.currentUserId = null
       } else if (actionType === 'eitm') {
+        console.log(type)
         // 编辑回显
         const res = await echoPermissions(id)
         this.formData.name = res.name
@@ -151,19 +169,19 @@ export default {
     // 表单手动验证
     async ManualVerification() {
       const postData = { ...this.formData }
-      const ids = this.actionType === 'eitm' ? redactPermissions : addPermissions
+      const fn = this.actionType === 'eitm' ? redactPermissions : addPermissions
       // 手动校验表单
-      this.$refs.formDataList.validate().then(async() => {
+      this.$refs.formDataList.validate().then(() => {
         // 编辑
-        if (ids) {
+        if (fn) {
           postData.id = this.currentUserId
           // 重新渲染页面
-          this.tableData = await getPermissions()
+          this.treeListForm()
         }
-        return ids(postData)
-      }).then(async() => {
+        return fn(postData)
+      }).then(() => {
         // 重新渲染页面
-        this.tableData = await getPermissions()
+        this.treeListForm()
         // 关闭对话框
         this.dialogFormVisible = false
         // 提示
