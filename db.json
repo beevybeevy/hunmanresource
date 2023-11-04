@@ -1,0 +1,34 @@
+{
+  "address": [
+    {
+      "id": 101,
+      "receiver": "李白姓白",
+      "mobile": "13800000101",
+      "province": "浙江省",
+      "city": "杭州市",
+      "area": "西湖区",
+      "location": "西湖大道101号",
+      "state": 1
+    },
+    {
+      "id": 102,
+      "receiver": "苏轼",
+      "mobile": "13800000102",
+      "province": "北京市",
+      "city": "北京市",
+      "area": "昌平区",
+      "location": "西湖大道102号",
+      "state": 0
+    },
+    {
+      "receiver": "韩愈",
+      "mobile": "13800000103",
+      "province": "浙江省",
+      "city": "杭州市",
+      "area": "西湖区",
+      "location": "西湖大道103号",
+      "state": 1,
+      "id": 103
+    }
+  ]
+}
