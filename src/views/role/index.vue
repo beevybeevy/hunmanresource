@@ -4,7 +4,7 @@
     <el-table v-loading="isLoading" :data="tableData" style="width: 100%" border>
       <el-table-column prop="id" label="序号" width="180" />
       <el-table-column prop="name" label="角色" width="180">
-        <template v-slot="{row}">
+        <template v-slot="{ row }">
           <el-input v-if="row.isEdit" v-model="row.editData.name" />
           <span v-else>{{ row.name }}</span>
         </template>
@@ -17,7 +17,7 @@
         </template>
       </el-table-column>
       <el-table-column prop="description" label="描述">
-        <template v-slot="{row}">
+        <template v-slot="{ row }">
           <el-input v-if="row.isEdit" v-model="row.editData.description" />
           <span v-else>{{ row.description }}</span>
         </template>
@@ -27,10 +27,11 @@
         <template v-slot="{ row }">
           <template v-if="row.isEdit">
             <el-button type="primary" size="mini" @click="submitEdit(row.editData)">确定</el-button>
-            <el-button type="text" @click="row.isEdit=false">取消</el-button>
+            <el-button type="text" @click="row.isEdit = false">取消</el-button>
           </template>
           <template v-else>
-            <el-button type="text">分配权限</el-button>
+            <!-- 点击分配权限出现新的Dialog -->
+            <el-button type="text" @click="distributeDialog(row.id)">分配权限</el-button>
             <el-button type="text" @click="editItem(row)">编辑</el-button>
             <el-button type="text" @click="deleteItem(row.id)">删除</el-button>
           </template>
@@ -63,10 +64,27 @@
         <el-button type="primary" @click="openDialog">确 定</el-button>
       </div>
     </el-dialog>
+    <!-- 点击分配权限后出来的弹框 -->
+    <el-dialog title="提示" :visible.sync="dialogVisible" width="30%">
+      <el-tree
+        ref="tree"
+        :data="permissionData"
+        show-checkbox
+        node-key="id"
+        default-expand-all
+        :default-checked-keys="permissionArray"
+        :props="defaultProps"
+        check-change=""
+      />
+      <span slot="footer" class="dialog-footer">
+        <el-button type="primary" size="mini" @click="submitPermissionChange">确 定</el-button>
+        <el-button size="mini" @click="dialogVisible = false">取 消</el-button>
+      </span>
+    </el-dialog>
   </div>
 </template>
 <script>
-import { getRoleList, addRole, deleteRole, editRole } from '@/api/role'
+import { getRoleList, addRole, deleteRole, editRole, getPermissionList, getRoleDetail, correctPermission } from '@/api/role'
 export default {
   name: 'Role',
   data() {
@@ -77,19 +95,22 @@ export default {
       total: 0,
       isLoading: false,
       dialogFormVisible: false,
+      dialogVisible: false,
       form: {
         name: '',
         state: false,
         description: ''
       },
       formLabelWidth: '120px',
-      rules: {}
+      rules: {},
+      permissionData: [],
+      defaultProps: {
+        children: 'children',
+        label: 'name'
+      },
+      permissionArray: []
     }
   },
-  // async created() {
-  //   const res = await getRoleList()
-  //   console.log(res)
-  // }
   async created() {
     await this.renderPage()
     this.rules = {
@@ -107,7 +128,7 @@ export default {
       this.isLoading = true
       // 还缺少Loading遮罩
       const res = await getRoleList(this.page, this.pagesize)
-      console.log(res)
+      // console.log(res)
       // console.log(res.rows)
       this.tableData = res.rows
       this.total = res.total
@@ -147,6 +168,39 @@ export default {
       this.$message.success('更新数据成功')
       // this.renderPage()
       this.renderPage()
+    },
+    async distributeDialog(id) {
+      this.selectedID = id
+      const res = await getPermissionList(id)
+      // console.log(res)
+      this.permissionData = this.transformData(res, 0)
+      // console.log(this.permissionData)
+      const secondRes = await getRoleDetail(id)
+      // console.log(secondRes.permIds)
+      this.permissionArray = secondRes.permIds
+      this.dialogVisible = true
+    },
+
+    // 改变数据模式的递归函数
+    transformData(list, rootValue) {
+      const arr = []
+      list.forEach(item => {
+        if (item.pid === rootValue) {
+          const children = this.transformData(list, item.id)
+          if (children.length) {
+            item.children = children
+          }
+          arr.push(item)
+        }
+      })
+      // console.log(arr)
+      return arr
+    },
+    async submitPermissionChange() {
+      this.dialogVisible = false
+      const arr = this.$refs.tree.getCheckedKeys()
+      await correctPermission(this.selectedID, arr)
+      this.$message.success('更改权限成功')
     }
   }
 
