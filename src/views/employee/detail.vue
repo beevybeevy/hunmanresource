@@ -78,8 +78,8 @@
           <!-- 员工照片 -->
           <el-row>
             <el-col :span="12">
-              <el-form-item label="员工头像" prop="">
-                <!-- 放置上传图片 -->
+              <el-form-item label="员工头像" prop="staffPhoto">
+                <image-upload v-model="FormData.staffPhoto" />
               </el-form-item>
             </el-col>
           </el-row>
@@ -99,8 +99,9 @@
 <script>
 import { addEmployee, editEmployee, getEmployeeDetail } from '@/api/department'
 import SelectTree from './components/select-tree.vue'
+import imageUpload from './components/image-upload.vue'
 export default {
-  components: { SelectTree },
+  components: { SelectTree, imageUpload },
   data() {
     return {
       FormData: {
@@ -110,7 +111,8 @@ export default {
         departmentId: '',
         formOfEmployment: null, // 聘用形式
         timeOfEntry: '', // 入职时间
-        correctionTime: '' // 转正时间
+        correctionTime: '', // 转正时间
+        staffPhoto: '' // 头像
       },
       rules: {
         // 姓名校验
