@@ -79,3 +79,11 @@ export function getExportTemplate() {
     responseType: 'blob' // 二进制文件流
   })
 }
+// 上传execl
+export function uploadExcel(data) {
+  return request({
+    url: '/sys/user/import',
+    method: 'post',
+    data // form- data类型 因为要上传文件类型
+  })
+}

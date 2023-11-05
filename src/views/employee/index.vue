@@ -26,16 +26,21 @@
       <div class="right">
         <el-row class="opeate-tools" type="flex" justify="end">
           <el-button size="mini" type="primary" @click="$router.push('/employee/detail')">添加员工</el-button>
-          <el-button size="mini" @click="showDialog=true">excel导入</el-button>
-          <el-button size="mini" @click="exportEmployeeExecel">excel导出</el-button>
+          <el-button size="mini" @click="showDialog = true;">excel导入</el-button>
+          <!-- <el-button size="mini" @click="exportEmployeeExecel">excel导出</el-button> -->
+          <el-popover v-model="visible" placement="top" width="160">
+            <p>文件确定导出吗？</p>
+            <div style="text-align: right; margin: 0">
+              <el-button size="mini" type="text" @click="visible = false">取消</el-button>
+              <el-button type="primary" size="mini" @click="visible = false; exportEmployeeExecel()">确定</el-button>
+            </div>
+            <el-button slot="reference" class="jiege" size="mini">excel导出</el-button>
+          </el-popover>
         </el-row>
         <!-- 表格组件 -->
-        <el-table :data="list">
+        <el-table :data="list" tooltip-effect="dark">
           <!-- 选框 -->
-          <el-table-column
-            type="selection"
-            width="50"
-          />
+          <el-table-column type="selection" width="55" />
           <el-table-column prop="staffPhoto" align="center" label="头像">
             <template v-slot="{ row }">
               <el-avatar v-if="row.staffPhoto" :src="row.staffPhoto" :size="30" />
@@ -66,8 +71,9 @@
         </el-table>
         <!-- 分页 -->
         <el-row style="height: 60px" align="middle" type="flex" justify="end">
+          <span style="font-size: 13px;color: #606266;">共 {{ total }} 条</span>
           <el-pagination
-            layout="total,prev, pager, next"
+            layout="prev, pager, next"
             :total="total"
             :current-page="queryParams.page"
             :page-size="queryParams.pagesize"
@@ -99,6 +105,7 @@ export default {
   },
   data() {
     return {
+      visible: false,
       showDialog: false,
       depts: [],
       // 树形默认属性值
@@ -181,6 +188,7 @@ export default {
     }
 
   }
+
 }
 
 </script>
@@ -215,6 +223,11 @@ export default {
       font-size: 12px;
       display: inline-block;
     }
+
+    .jiege {
+      margin-left: 10px;
+    }
+
   }
 }
 </style>
