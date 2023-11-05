@@ -120,9 +120,12 @@ export default {
     },
     // 弹出框的删除
     async del() {
+    // 发起请求
       deletePermissions(this.formData.id)
+      // 关闭弹框
       this.dialogVisible = false
-      this.tableData = await getPermissions()
+      // 重新渲染页面
+      this.treeListForm()
     },
     // X 号的点击关闭
     handleClose() {
