@@ -38,7 +38,7 @@
             <el-col :span="12">
               <el-form-item label="部门" prop="departmentId">
                 <!-- 放置及联部门组件 -->
-                <select-tree v-model="FormData.departmentId" placeholder="请输入部门" class="inputW" />
+                <select-tree v-model="FormData.departmentId" class="inputW" />
               </el-form-item>
             </el-col>
           </el-row>
@@ -78,8 +78,8 @@
           <!-- 员工照片 -->
           <el-row>
             <el-col :span="12">
-              <el-form-item label="员工头像" prop="">
-                <!-- 放置上传图片 -->
+              <el-form-item label="员工头像" prop="staffPhoto">
+                <image-upload v-model="FormData.staffPhoto" />
               </el-form-item>
             </el-col>
           </el-row>
@@ -99,18 +99,19 @@
 <script>
 import { addEmployee, editEmployee, getEmployeeDetail } from '@/api/department'
 import SelectTree from './components/select-tree.vue'
+import imageUpload from './components/image-upload.vue'
 export default {
-  components: { SelectTree },
+  components: { SelectTree, imageUpload },
   data() {
     return {
       FormData: {
         username: '', // 用户名
         mobile: '', // 手机号
         workNumber: '', // 工号
-        departmentId: '',
-        formOfEmployment: null, // 聘用形式
+        formOfEmployment: '', // 聘用形式
         timeOfEntry: '', // 入职时间
-        correctionTime: '' // 转正时间
+        correctionTime: '', // 转正时间
+        staffPhoto: '' // 头像
       },
       rules: {
         // 姓名校验
@@ -157,9 +158,9 @@ export default {
     saveData() {
       this.$refs.userForm.validate(async isOK => {
         if (isOK) {
-          // 编辑模式1
+          // 编辑模式
           if (this.$route.params.id) {
-            // 编辑模式（）
+            // 编辑模式
             await editEmployee(this.FormData)
             this.$message.success('更新员工成功')
           } else {
