@@ -109,7 +109,7 @@ export default {
         mobile: '', // 手机号
         workNumber: '', // 工号
         departmentId: '',
-        formOfEmployment: null, // 聘用形式
+        formOfEmployment: '', // 聘用形式
         timeOfEntry: '', // 入职时间
         correctionTime: '', // 转正时间
         staffPhoto: '' // 头像
