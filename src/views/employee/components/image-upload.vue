@@ -1,5 +1,11 @@
 <template>
-  <el-upload class="avatar-uploader" action="" :show-file-list="false" :before-upload="beforeAvatarUpload">
+  <el-upload
+    class="avatar-uploader"
+    action=""
+    :show-file-list="false"
+    :before-upload="beforeAvatarUpload"
+    :http-request="uploadImage"
+  >
     <!-- (自动上传)action是上传地址 人资项目不需要 人资项目(手动上传)  -->
     <!-- show-file-list不展示列表 -->
     <img v-if="value" :src="value" class="avatar">
@@ -8,6 +14,7 @@
 </template>
 
 <script>
+import COS from 'cos-js-sdk-v5'
 export default {
   props: {
     value: {
@@ -30,6 +37,29 @@ export default {
         this.$message.error('上传头像图片大小不能超过 5MB!')
       }
       return isJPG && isLt2M
+    },
+    // 选择图片上传
+    uploadImage(params) {
+      console.log(params.file)
+      const cos = new COS({
+        SecretId: 'AKIDHXehfR2RgkeyIWkCXsDUo0DjHtSn3T0W',
+        SecretKey: 'eHEAxaPBmLm1464X6eAX1W6lSyMadVGr'
+      }) // 完成cos对象的初始化
+      cos.putObject({
+        Bucket: 'xiaotudou99-1322187364', // 存储桶名称
+        Region: 'ap-nanjing', // 地域名称
+        Key: params.file.name, // 文件名称
+        StorageClass: 'STANDARD', // 固定值
+        Body: params.file // 文件对象
+      }, (err, data) => {
+        if (data.statusCode === 200 && data.Location) {
+          // 拿到了腾讯云返回的地址
+          // 通过input自定义事件将地址传出去
+          this.$emit('input', 'http://' + data.Location) // 将地址返回了
+        } else {
+          this.$message.error(err.Message) // 上传失败提示消息
+        }
+      })
     }
   }
 }
