@@ -14,7 +14,8 @@ export function transListToTreeData(list, rootValue) {
       // 找到了匹配的节点
       arr.push(item)
       // 当前节点的id 和 当前节点的子节点的pid是想等的
-      const children = transListToTreeData(list, item.id) // 找到的节点的子节点
+      const children = transListToTreeData(list, item.id) // 找到的节点的子节点  //递归调用
+      // rootValue   item.id  自身调用自身时参数不能重复，参数必须有变化，否则会死循环
       if (children.length) { item.children = children } // 将子节点赋值给当前节点
     }
   })

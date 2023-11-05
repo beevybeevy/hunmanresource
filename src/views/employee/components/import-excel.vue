@@ -10,7 +10,13 @@
   >
     <el-row type="flex" justify="center">
       <div class="upload-excel">
-        <input ref="excel-upload-input" class="excel-upload-input" type="file" accept=".xlsx, .xls">
+        <input
+          ref="excel-upload-input"
+          class="excel-upload-input"
+          type="file"
+          accept=".xlsx, .xls"
+          @change="uploadChange"
+        >
         <div class="drop">
           <i class="el-icon-upload" />
           <el-button type="text" @click="getTemplate">下载导入模板</el-button>
@@ -31,6 +37,7 @@ import FileSaver from 'file-saver'
 import { getExportTemplate, uploadExcel } from '@/api/department'
 export default {
   props: {
+    // 控制导入组件显示隐藏
     showExcelDialog: {
       type: Boolean,
       default: false

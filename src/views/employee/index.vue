@@ -11,7 +11,14 @@
           placeholder="输入员工姓名全员搜索"
           @input="changeValue"
         />
-        <!-- 树形组件 -->
+        <!-- 树形组件 --> <!-- 先初始化首个节点->记录节点->选中节点->记录节点 -->
+        <!-- data 绑定数据，
+          props设置属性 树形配置，
+          default-expand-all 默认展开所有节点，
+          highlight-current 高亮，
+         :expand-on-click-node="false" 关闭点击折叠展开 -->
+        <!-- el-tree 插槽内容 -->
+        <!-- 切换节点用 ref属性，key标识， @node-click="onNodeClick" 节点事件-->
         <el-tree
           ref="deptTree"
           node-key="id"
@@ -24,10 +31,11 @@
         />
       </div>
       <div class="right">
+        <!-- el-row 行 ，type布局模式，justify flex的布局下的水平排列方式-->
         <el-row class="opeate-tools" type="flex" justify="end">
           <el-button size="mini" type="primary" @click="$router.push('/employee/detail')">添加员工</el-button>
+          <!-- @click="showDialog = true;"点击出现导入弹层 -->
           <el-button size="mini" @click="showDialog = true;">excel导入</el-button>
-          <!-- <el-button size="mini" @click="exportEmployeeExecel">excel导出</el-button> -->
           <el-popover v-model="visible" placement="top" width="160">
             <p>文件确定导出吗？</p>
             <div style="text-align: right; margin: 0">
@@ -38,10 +46,12 @@
           </el-popover>
         </el-row>
         <!-- 表格组件 -->
+        <!-- :data="list" 获取员工数据时绑定表格 -->
         <el-table :data="list" tooltip-effect="dark">
           <!-- 选框 -->
           <el-table-column type="selection" width="55" />
           <el-table-column prop="staffPhoto" align="center" label="头像">
+            <!-- 作用域插槽 -->
             <template v-slot="{ row }">
               <el-avatar v-if="row.staffPhoto" :src="row.staffPhoto" :size="30" />
               <span v-else class="username">{{ row.username.charAt(0) }}</span>
@@ -70,6 +80,7 @@
           </el-table-column>
         </el-table>
         <!-- 分页 -->
+        <!--  align 是flex布局下水平排列方式 -->
         <el-row style="height: 60px" align="middle" type="flex" justify="end">
           <span style="font-size: 13px;color: #606266;">共 {{ total }} 条</span>
           <el-pagination
@@ -82,7 +93,7 @@
         </el-row>
       </div>
     </div>
-    <!-- 导入弹框 -->
+    <!-- 引入导入弹框 -->
     <ImportExcel :show-excel-dialog.sync="showDialog" />
   </div>
 </template>
@@ -90,62 +101,67 @@
 <script>
 import FileSaver from 'file-saver'
 import {
-  getDepartment,
-  transListToTreeData,
-  getEmployeeList, delEmployee,
-  exportEmployeeExecel
+  getDepartment, // 组织架构
+  transListToTreeData, // 树型
+  getEmployeeList, // 员工列表
+  delEmployee, // 删除员工
+  exportEmployeeExecel // 导出excel
 } from '@/api/department'
 
-// 导入员工导入组件
-import ImportExcel from './components/import-excel.vue'
+import ImportExcel from './components/import-excel.vue'// 导入员工导入组件
 export default {
   name: 'Department',
   components: {
     ImportExcel
   },
+  // 定义数据
   data() {
     return {
-      visible: false,
+      visible: false, // 确认导出框状态是否可见
       showDialog: false,
       depts: [],
-      // 树形默认属性值
+      // 树形设置字段 默认属性值
       defaultProps: {
-        children: 'children',
-        label: 'name'
+        children: 'children', // 从哪个字段读取子节点
+        label: 'name' // 显示name
       },
-      // 节点存储查询的参数
+      // 分页参数 节点存储查询的参数
       queryParams: {
         departmentId: null, // 记录部门id
         page: 1, // 当前页码
         pagesize: 10,
-        // 设置关键字参数
-        keyword: ''
+        keyword: ''// 设置关键字参数模糊搜索
       },
       total: 0, // 记录员工的总数
-      list: []
+      list: []// 存储员工数据
     }
   },
+  // 初始化加载数据转化树形
   created() {
     this.getDepartment() // 调取接口
   },
   methods: {
+    //  getDepartment组织架构数据
     async getDepartment() {
+      // 递归方法 将列表转化成树形
       // const result = await getDepartment()
-      this.depts = transListToTreeData(await getDepartment(), 0)
-      this.queryParams.departmentId = this.depts[0].id
+      this.depts = transListToTreeData(await getDepartment(), 0) // 调用方法，传入起始值
+      // console.log(this.depts[0])
+      this.queryParams.departmentId = this.depts[0].id // 记录首个节点Id
       // 设置选中节点
-      // 数组渲染
+      // 数组件渲染是异步的，等到更新完毕
       this.$nextTick(() => {
-        // 树渲染完
+        // 树渲染完成
         this.$refs.deptTree.setCurrentKey(this.queryParams.departmentId)
       })
       // 获取员工列表
       this.getEmployeeList()
     },
-    // 获取右侧数据
+    // 切换部门 获取右侧数据
     selectNode(node) {
       this.queryParams.departmentId = node.id // 重新记录了参数
       this.queryParams.page = 1 // 设置第一页
+      // 获取员工列表
       this.getEmployeeList()
     },
     onNodeClick(node) {
@@ -154,7 +170,7 @@ export default {
       this.queryParams.page = 1
       this.getEmployeeList()
     },
-    // 获取员工列表
+    // 获取员工列表 （先封装api获取列表->定义数据list 封装)
     async getEmployeeList() {
       this.loding = true
       const { rows, total } = await getEmployeeList(this.queryParams)
