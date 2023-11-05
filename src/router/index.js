@@ -65,6 +65,12 @@ export const constantRoutes = [
     }]
   },
 
+  // 404 page must be placed at the end !!!
+  { path: '*', redirect: '/404', hidden: true }
+]
+
+// 根据用户权限进行动态注册路由表
+export const DynamicRoutingPermission = [
   approval,
   attendance,
   department,
@@ -72,10 +78,7 @@ export const constantRoutes = [
   permission,
   role,
   salary,
-  social,
-
-  // 404 page must be placed at the end !!!
-  { path: '*', redirect: '/404', hidden: true }
+  social
 ]
 
 const createRouter = () => new Router({

@@ -25,9 +25,9 @@
       </div>
       <div class="right">
         <el-row class="opeate-tools" type="flex" justify="end">
-          <el-button size="mini" type="primary" @click="$router.push('/employee/detail')">添加员工</el-button>
-          <el-button size="mini" @click="showDialog=true">excel导入</el-button>
-          <el-button size="mini" @click="exportEmployeeExecel">excel导出</el-button>
+          <el-button v-per="'addEmployee'" size="mini" type="primary" @click="$router.push('/employee/detail')">添加员工</el-button>
+          <el-button v-per="'importExcel'" size="mini" @click="showDialog=true">excel导入</el-button>
+          <el-button v-per="'exportExcel'" size="mini" @click="exportEmployeeExecel">excel导出</el-button>
         </el-row>
         <!-- 表格组件 -->
         <el-table :data="list">
