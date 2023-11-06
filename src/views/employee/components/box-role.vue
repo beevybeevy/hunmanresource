@@ -1,6 +1,6 @@
 <template>
   <div>
-    <el-dialog :visible.sync="centerDialogVisible" width="30%" left title="分配角色">
+    <el-dialog :visible.sync="centerDialogVisible" left title="分配角色">
       <!-- 弹层内容 -->
       <!-- checkbox -->
       <el-checkbox-group v-model="roleIds">

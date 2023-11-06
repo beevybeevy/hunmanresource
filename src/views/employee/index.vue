@@ -254,7 +254,4 @@ export default {
 
   }
 }
-.box{
-  background-color: aqua;
-}
 </style>
