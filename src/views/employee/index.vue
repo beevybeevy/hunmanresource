@@ -47,7 +47,7 @@
         </el-row>
         <!-- 表格组件 -->
         <!-- :data="list" 获取员工数据时绑定表格 -->
-        <el-table :data="list" tooltip-effect="dark">
+        <el-table :data="list" tooltip-effect="dark" :header-cell-style="{ background: '#f5f6f8' }">
           <!-- 选框 -->
           <el-table-column type="selection" width="55" />
           <el-table-column prop="staffPhoto" align="center" label="头像">
