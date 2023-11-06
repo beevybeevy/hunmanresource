@@ -155,7 +155,7 @@ export default {
         // 清空id的值
         this.currentUserId = null
       } else if (actionType === 'eitm') {
-        console.log(type)
+        // console.log(type)
         // 编辑回显
         const res = await echoPermissions(id)
         this.formData.name = res.name
@@ -165,6 +165,9 @@ export default {
         this.actionType = 'eitm'
         // 给id赋值
         this.currentUserId = id
+        this.formData.pid = res.pid
+        console.log(this.currentUserId)
+        console.log(this.formData.pid)
       }
       // 打开对话框
       this.dialogFormVisible = true
@@ -178,9 +181,10 @@ export default {
         // 编辑
         if (fn) {
           postData.id = this.currentUserId
-          // 重新渲染页面
-          this.treeListForm()
         }
+        console.log(this.currentUserId)
+        // 重新渲染页面
+        this.treeListForm()
         return fn(postData)
       }).then(() => {
         // 重新渲染页面
