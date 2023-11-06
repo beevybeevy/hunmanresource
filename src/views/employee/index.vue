@@ -33,13 +33,13 @@
       <div class="right">
         <!-- el-row 行 ，type布局模式，justify flex的布局下的水平排列方式-->
         <el-row class="opeate-tools" type="flex" justify="end">
-          <el-button v-per="'addEmployee'" size="mini" type="primary" @click="$router.push('/employee/detail')">添加员工</el-button>
+          <el-button size="mini" type="primary" @click="$router.push('/employee/detail')">添加员工</el-button>
           <!-- @click="showDialog = true;"点击出现导入弹层 -->
-          <el-button v-per="'importExcel'" size="mini" @click="showDialog = true;">excel导入</el-button>
+          <el-button size="mini" @click="showDialog = true;">excel导入</el-button>
           <el-popover v-model="visible" placement="top" width="160">
             <p>文件确定导出吗？</p>
             <div style="text-align: right; margin: 0">
-              <el-button v-per="'exportExcel'" size="mini" type="text" @click="visible = false">取消</el-button>
+              <el-button size="mini" type="text" @click="visible = false">取消</el-button>
               <el-button type="primary" size="mini" @click="visible = false; exportEmployeeExecel()">确定</el-button>
             </div>
             <el-button slot="reference" class="jiege" size="mini">excel导出</el-button>
