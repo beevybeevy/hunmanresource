@@ -18,6 +18,17 @@
           <i class="el-icon-setting" />
         </div>
         <el-dropdown-menu slot="dropdown" class="user-dropdown">
+          <!-- 跳转首页 -->
+          <router-link to="/">
+            <el-dropdown-item>
+              首页
+            </el-dropdown-item>
+          </router-link>
+          <!-- 跳转项目地址 -->
+          <!-- a标签的 target 属性规定在何处打开链接文档 在框架中 -->
+          <a target="_blank" href="https://gitee.com/beevy/who-cares.git">
+            <el-dropdown-item>项目地址</el-dropdown-item>
+          </a>
           <!-- prevent: 阻止默认事件 -->
           <!-- native: 绑定原生事件 -->
           <el-dropdown-item @click.native="updatePassword">
