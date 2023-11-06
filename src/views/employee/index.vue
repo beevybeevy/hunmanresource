@@ -33,13 +33,13 @@
       <div class="right">
         <!-- el-row 行 ，type布局模式，justify flex的布局下的水平排列方式-->
         <el-row class="opeate-tools" type="flex" justify="end">
-          <el-button v-per="'addEmployee'" size="mini" type="primary" @click="$router.push('/employee/detail')">添加员工</el-button>
+          <el-button size="mini" type="primary" @click="$router.push('/employee/detail')">添加员工</el-button>
           <!-- @click="showDialog = true;"点击出现导入弹层 -->
-          <el-button v-per="'importExcel'" size="mini" @click="showDialog = true;">excel导入</el-button>
+          <el-button size="mini" @click="showDialog = true;">excel导入</el-button>
           <el-popover v-model="visible" placement="top" width="160">
             <p>文件确定导出吗？</p>
             <div style="text-align: right; margin: 0">
-              <el-button v-per="'exportExcel'" size="mini" type="text" @click="visible = false">取消</el-button>
+              <el-button size="mini" type="text" @click="visible = false">取消</el-button>
               <el-button type="primary" size="mini" @click="visible = false; exportEmployeeExecel()">确定</el-button>
             </div>
             <el-button slot="reference" class="jiege" size="mini">excel导出</el-button>
@@ -47,7 +47,7 @@
         </el-row>
         <!-- 表格组件 -->
         <!-- :data="list" 获取员工数据时绑定表格 -->
-        <el-table :data="list" tooltip-effect="dark">
+        <el-table :data="list" tooltip-effect="dark" :header-cell-style="{ background: '#f5f6f8' }">
           <!-- 选框 -->
           <el-table-column type="selection" width="55" />
           <el-table-column prop="staffPhoto" align="center" label="头像">
@@ -72,7 +72,7 @@
           <el-table-column label="操作" width="280px">
             <template v-slot="{ row }">
               <el-button size="mini" type="text" @click="$router.push(`/employee/detail/${row.id}`)">查看</el-button>
-              <el-button size="mini" type="text">角色</el-button>
+              <el-button size="mini" type="text" @click="getRole(row.id)">角色</el-button>
               <el-popconfirm title="确认删除该行数据吗？" @onConfirm="confirmDel(row.id)">
                 <el-button slot="reference" style="margin-left:10px" size="mini" type="text">删除</el-button>
               </el-popconfirm>
@@ -93,6 +93,8 @@
         </el-row>
       </div>
     </div>
+    <!-- 分配角色弹框 -->
+    <BoxRole ref="centerDialogVisible" class="box" />
     <!-- 引入导入弹框 -->
     <ImportExcel :show-excel-dialog.sync="showDialog" />
   </div>
@@ -109,10 +111,12 @@ import {
 } from '@/api/department'
 
 import ImportExcel from './components/import-excel.vue'// 导入员工导入组件
+import BoxRole from './components/box-role.vue'
 export default {
   name: 'Department',
   components: {
-    ImportExcel
+    ImportExcel,
+    BoxRole
   },
   // 定义数据
   data() {
@@ -201,6 +205,10 @@ export default {
     async exportEmployeeExecel() {
       const result = await exportEmployeeExecel()
       FileSaver.saveAs(result, '员工表.xlsx') // 下载文件
+    },
+    // 显示员工角色
+    getRole(id) {
+      this.$refs.centerDialogVisible.getRole(id)
     }
 
   }
