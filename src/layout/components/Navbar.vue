@@ -105,9 +105,11 @@ export default {
     },
     async logout() {
       // 执行登出 action
-      await this.$store.dispatch('user/logout')
-      // 跳转到登录页
-      this.$router.push(`/login`)
+      this.$confirm('确认退出登录吗').then(async() => {
+        await this.$store.dispatch('user/logout')
+        // 跳转到登录页
+        this.$router.push(`/login`)
+      }).catch()
     },
     updatePassword() {
       this.showDialog = true
