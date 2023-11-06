@@ -88,3 +88,12 @@ export function uploadExcel(data) {
     data // form- data类型 因为要上传文件类型
   })
 }
+
+// 分配员工角色
+export function assignRole(data) {
+  return request({
+    url: '/sys/user/assignRoles',
+    method: 'put',
+    data
+  })
+}
