@@ -20,8 +20,7 @@
 </template>
 
 <script>
-import { getRoleDetail } from '@/api/role'
-import { getEnableRoleList, assignRole } from '@/api/department'
+import { getEnableRoleList, getRole, assignRole } from '@/api/department'
 export default {
   name: 'GetAvailable',
   data() {
@@ -40,7 +39,7 @@ export default {
       this.roleList = await getEnableRoleList()
       this.currentId = id
       // 角色详情
-      const { roleIds } = await getRoleDetail(id)
+      const { roleIds } = await getRole(id)
       // 获取角色id
       this.roleIds = roleIds
       // 打开弹框,要等数据加载完成再打开弹框

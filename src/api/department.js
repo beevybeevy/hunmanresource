@@ -89,18 +89,22 @@ export function uploadExcel(data) {
   })
 }
 
+// 获取可用的角色
+export function getEnableRoleList() {
+  return request({
+    url: '/sys/role/list/enabled'
+  })
+}
+
+// 获取角色基本信息
+export function getRole(id) {
+  return request.get(`/sys/user/${id}`)
+}
 // 分配员工角色
 export function assignRole(data) {
   return request({
     url: '/sys/user/assignRoles',
     method: 'put',
     data
-  })
-}
-
-// 获取可用的角色
-export function getEnableRoleList() {
-  return request({
-    url: '/sys/role/list/enabled'
   })
 }
