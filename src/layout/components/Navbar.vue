@@ -5,10 +5,32 @@
     <breadcrumb class="breadcrumb-container" />
 
     <div class="right-menu">
+      <!-- 接收消息的按钮 -->
+
+      <el-popover
+        ref="customPopover"
+        placement="top-start"
+        title="未读信息"
+        width="400"
+        trigger="hover"
+      >
+        <div v-for="(item) in info" :key="item.id" class="card">
+
+          <el-button v-if="item.type===1" type="success" size="mini">通知</el-button>
+          <el-button v-else-if="item.type===2" type="info" size="mini">提示</el-button>
+          <el-button v-else-if="item.type===3" type="warning" size="mini">重要</el-button>
+          <el-button v-else type="danger" size="mini">紧急</el-button>
+          <i class="el-icon-close" @click="closePopover" />
+          <p>{{ item.content }}</p>
+          <p>{{ item.update_time }}</p>
+        </div>
+        <i slot="reference" class="el-icon-message" @click="receiveMessage" />
+
+      </el-popover>
+
       <el-dropdown class="avatar-container" trigger="click">
         <div class="avatar-wrapper">
-          <!-- <img :src="avatar+'?imageView2/1/w/80/h/80'" class="user-avatar">
-          <i class="el-icon-caret-bottom" /> -->
+
           <!-- 头像 -->
           <img v-if="avatar" :src="avatar" class="user-avatar">
           <span v-else class="username">{{ name ? name[0] : '管' }}</span>
@@ -18,13 +40,24 @@
           <i class="el-icon-setting" />
         </div>
         <el-dropdown-menu slot="dropdown" class="user-dropdown">
+          <router-link to="/">
+            <el-dropdown-item>
+              首页
+            </el-dropdown-item>
+          </router-link>
+          <a target="_blank" href="https://gitee.com/beevy/who-cares.git">
+            <el-dropdown-item>项目地址</el-dropdown-item>
+          </a>
           <!-- prevent: 阻止默认事件 -->
           <!-- native: 绑定原生事件 -->
           <el-dropdown-item @click.native="updatePassword">
             <span style="display:block;">修改密码</span>
           </el-dropdown-item>
+          <el-dropdown-item>
+            <span style="display:block;" @click="dialogVisible=true">更新头像</span>
+          </el-dropdown-item>
           <el-dropdown-item divided @click.native="logout">
-            <span style="display:block;">登出</span>
+            <span type="text" style="display:block;">登出</span>
           </el-dropdown-item>
         </el-dropdown-menu>
       </el-dropdown>
@@ -47,23 +80,40 @@
         </el-form-item>
       </el-form>
     </el-dialog>
+    <!--修改头像 弹框-->
+    <el-dialog
+      title="更新头像"
+      :visible.sync="dialogVisible"
+      width="50%"
+      center
+      @update="update(re)"
+    >
+      <Navbarli />
+    </el-dialog>
   </div>
 </template>
 
 <script>
+
 import { mapGetters } from 'vuex'
 import Breadcrumb from '@/components/Breadcrumb'
 import Hamburger from '@/components/Hamburger'
 import { updatePassword } from '@/api/user'
+import { receiveInfo } from '@/api/message'
 
+import Navbarli from './Navbarli.vue'// 引入更新头像组件
 export default {
   components: {
     Breadcrumb,
-    Hamburger
+    Hamburger,
+    Navbarli//
+
   },
   data() {
     return {
       showDialog: false,
+      dialogVisible: false,
+
       passForm: {
         oldPassword: '', // 旧密码
         newPassword: '', // 新密码
@@ -88,14 +138,15 @@ export default {
             }
           }
         }] // 确认密码字段
-      }
+      },
+      info: []
     }
   },
   computed: {
     // 引入头像和用户名称
     ...mapGetters([
       'sidebar',
-      'avatar',
+      'avatar', // 映射头像
       'name'
     ])
   },
@@ -128,12 +179,27 @@ export default {
       this.$refs.passForm.resetFields() // 重置表单
       // 关闭弹层
       this.showDialog = false
+    },
+    async receiveMessage() {
+      const res = await receiveInfo()
+      this.info = res.unread
+      console.log(this.info)
+    },
+    closePopover() {
+      this.$refs.customPopover.doClose()
     }
   }
 }
+
 </script>
 
 <style lang="scss" scoped>
+
+.card{
+  border: 5px #5a5e66;
+  width:400px;
+  border-radius: 10px;
+}
 .navbar {
   height: 50px;
   overflow: hidden;
@@ -221,5 +287,14 @@ export default {
       }
     }
   }
+}
+
+.el-icon-message{
+  font-size: 23px;
+  margin-bottom: 15px;
+}
+.el-icon-close{
+  position:right;
+  margin-left:300px
 }
 </style>

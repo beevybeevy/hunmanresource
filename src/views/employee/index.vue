@@ -33,7 +33,8 @@
       <div class="right">
         <!-- el-row 行 ，type布局模式，justify flex的布局下的水平排列方式-->
         <el-row class="opeate-tools" type="flex" justify="end">
-          <el-button v-per="'role'" size="mini" type="primary" @click="$router.push('/employee/detail')">添加员工</el-button>
+          <el-button size="mini" @click="canOpen">群发信息</el-button>
+          <el-button v-per="'addEmployee'" size="mini" type="primary" @click="$router.push('/employee/detail')">添加员工</el-button>
           <!-- @click="showDialog = true;"点击出现导入弹层 -->
           <el-button v-per="'role'" size="mini" @click="showDialog = true;">excel导入</el-button>
           <el-popover v-model="visible" placement="top" width="160">
@@ -47,7 +48,14 @@
         </el-row>
         <!-- 表格组件 -->
         <!-- :data="list" 获取员工数据时绑定表格 -->
-        <el-table :data="list" tooltip-effect="dark">
+        <el-table
+          ref="myTable"
+          v-loading="isLoading"
+          :data="list"
+          tooltip-effect="dark"
+          :row-key="list.id"
+          @selection-change="handleSelectionChange"
+        >
           <!-- 选框 -->
           <el-table-column type="selection" width="55" />
           <el-table-column prop="staffPhoto" align="center" label="头像">
@@ -72,7 +80,7 @@
           <el-table-column label="操作" width="280px">
             <template v-slot="{ row }">
               <el-button size="mini" type="text" @click="$router.push(`/employee/detail/${row.id}`)">查看</el-button>
-              <el-button size="mini" type="text">角色</el-button>
+              <el-button size="mini" type="text" @click="getRole(row.id)">角色</el-button>
               <el-popconfirm title="确认删除该行数据吗？" @onConfirm="confirmDel(row.id)">
                 <el-button slot="reference" style="margin-left:10px" size="mini" type="text">删除</el-button>
               </el-popconfirm>
@@ -93,8 +101,33 @@
         </el-row>
       </div>
     </div>
+    <!-- 分配角色弹框 -->
+    <BoxRole ref="centerDialogVisible" />
     <!-- 引入导入弹框 -->
     <ImportExcel :show-excel-dialog.sync="showDialog" />
+    <!-- 群发信息的弹框 -->
+    <el-dialog title="群发信息" :visible.sync="dialogFormVisible">
+      <div class="input">
+        <el-tag v-for="(item, index) in selectedRows" :key="index" closable @close="handleTagClose(index)">
+          {{ '@' + item.username }}
+        </el-tag>
+      </div>
+      <el-form ref="messageBox">
+        <el-form-item label="消息等级">
+          <el-select v-model="selectedOption" placeholder="请选择">
+            <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value" />
+          </el-select>
+        </el-form-item>
+        <el-form-item label="通知内容">
+          <el-input v-model="inputValue" clearable />
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="dialogFormVisible = false">取 消</el-button>
+        <el-button type="primary" @click="handleSubmit">确 定</el-button>
+      </div>
+    </el-dialog>
+
   </div>
 </template>
 
@@ -107,18 +140,24 @@ import {
   delEmployee, // 删除员工
   exportEmployeeExecel // 导出excel
 } from '@/api/department'
+import {
+  submitMessage// 发送群发消息
+} from '@/api/message'
 
 import ImportExcel from './components/import-excel.vue'// 导入员工导入组件
+import BoxRole from './components/box-role.vue' // 导入分配角色组件
 export default {
   name: 'Department',
   components: {
-    ImportExcel
+    ImportExcel,
+    BoxRole
   },
   // 定义数据
   data() {
     return {
       visible: false, // 确认导出框状态是否可见
       showDialog: false,
+      dialogFormVisible: false,
       depts: [],
       // 树形设置字段 默认属性值
       defaultProps: {
@@ -133,7 +172,19 @@ export default {
         keyword: ''// 设置关键字参数模糊搜索
       },
       total: 0, // 记录员工的总数
-      list: []// 存储员工数据
+      list: [], // 存储员工数据
+      selectedRows: [], // 点击复选框被选中的对象
+      selectedOption: '',
+      options: [
+        { label: '通知消息', value: 1 },
+        { label: '提示消息', value: 2 },
+        { label: '重要消息', value: 3 },
+        { label: '紧急消息', value: 4 }
+      ],
+      inputValue: '',
+      formData: {},
+      idGroup: [],
+      isLoading: false// 遮罩
     }
   },
   // 初始化加载数据转化树形
@@ -172,10 +223,12 @@ export default {
     },
     // 获取员工列表 （先封装api获取列表->定义数据list 封装)
     async getEmployeeList() {
+      this.isLoading = true
       this.loding = true
       const { rows, total } = await getEmployeeList(this.queryParams)
       this.list = rows
       this.total = total
+      this.isLoading = false
       // this.loding = false
     },
     // 切换页码
@@ -183,6 +236,7 @@ export default {
       this.queryParams.page = newPage // 赋值新页码
       this.getEmployeeList() // 查询数据
     },
+
     // 模糊查询
     changeValue() {
       clearTimeout(this.timer)// 防抖处理
@@ -193,6 +247,7 @@ export default {
     // 删除员工
     async confirmDel(id) {
       await delEmployee(id)
+      // 删除最后一页最后一项，默认返回前一页
       if (this.list.length === 1 && this.queryParams.page > 1) this.queryParams.page--
       this.getEmployeeList()
       this.$message.success('删除员工成功')
@@ -201,12 +256,58 @@ export default {
     async exportEmployeeExecel() {
       const result = await exportEmployeeExecel()
       FileSaver.saveAs(result, '员工表.xlsx') // 下载文件
+    },
+    // 显示员工角色
+    getRole(id) {
+      this.$refs.centerDialogVisible.getRole(id)
+    },
+
+    // handleSelectionChange(selectedRows) {
+    //   this.selectedRows = selectedRows
+    //   console.log(selectedRows)
+    // },
+    // handleCurrentChange(currentRow) {
+    //   // 当用户切换页码时，重新选中之前选中的行
+    //   this.$nextTick(() => {
+    //     this.selectedRows.forEach(row => {
+    //       console.log(row)
+    //       this.$refs.myTable.toggleRowSelection(row, true)
+    //     })
+    //   })
+    // }
+    canOpen() {
+      if (this.selectedRows.length > 0) {
+        this.dialogFormVisible = true
+        console.log(11)
+      } else {
+        this.$message.warning('请选择联系人')
+        return
+      }
+    },
+    handleSelectionChange(selectedRows) {
+      this.selectedRows = selectedRows
+      this.idGroup = selectedRows.map(item => item.id)
+      // console.log(selectedRows)
+    },
+    handleTagClose(index) {
+      this.selectedRows.splice(index, 1)
+    },
+    async handleSubmit() {
+      this.dialogFormVisible = false
+      this.formData = {
+        userIds: this.idGroup,
+        type: this.selectedOption,
+        content: this.inputValue
+      }
+      console.log(this.formData)
+      await submitMessage(this.formData)
+      this.$message.success('发送信息成功')
+      this.getEmployeeList()
+      this.selectedOption = ''
+      this.inputValue = ''
     }
-
   }
-
 }
-
 </script>
 
 <style lang="scss" scoped>
@@ -242,6 +343,19 @@ export default {
 
     .jiege {
       margin-left: 10px;
+    }
+
+    .el-tag {
+      margin-right: 10px;
+    }
+
+    .tags {
+      margin-bottom: 10px;
+      padding:20px
+    }
+    .input{
+      border: 1px solid gray;
+      padding:10px
     }
 
   }
