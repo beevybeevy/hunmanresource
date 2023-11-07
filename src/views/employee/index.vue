@@ -211,9 +211,7 @@ export default {
     getRole(id) {
       this.$refs.centerDialogVisible.getRole(id)
     }
-
   }
-
 }
 
 </script>

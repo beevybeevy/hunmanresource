@@ -24,3 +24,10 @@ export function updatePassword(data) {
     data
   })
 }
+
+// 更新用户头像接口   staffPhoto base64格式的头像
+export function uploadImg(staffPhoto = '') {
+  return request.put('/sys/updateStaffPhoto', {
+    staffPhoto
+  })
+}
