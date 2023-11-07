@@ -94,7 +94,7 @@
       </div>
     </div>
     <!-- 分配角色弹框 -->
-    <BoxRole ref="centerDialogVisible" class="box" />
+    <BoxRole ref="centerDialogVisible" />
     <!-- 引入导入弹框 -->
     <ImportExcel :show-excel-dialog.sync="showDialog" />
   </div>
@@ -111,7 +111,7 @@ import {
 } from '@/api/department'
 
 import ImportExcel from './components/import-excel.vue'// 导入员工导入组件
-import BoxRole from './components/box-role.vue'
+import BoxRole from './components/box-role.vue' // 导入分配角色组件
 export default {
   name: 'Department',
   components: {
