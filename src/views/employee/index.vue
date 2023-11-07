@@ -197,6 +197,7 @@ export default {
     // 删除员工
     async confirmDel(id) {
       await delEmployee(id)
+      // 删除最后一页最后一项，默认返回前一页
       if (this.list.length === 1 && this.queryParams.page > 1) this.queryParams.page--
       this.getEmployeeList()
       this.$message.success('删除员工成功')
