@@ -55,6 +55,7 @@
         <!-- :data="list" 获取员工数据时绑定表格 -->
         <el-table
           ref="myTable"
+          v-loading="isLoading"
           :data="list"
           tooltip-effect="dark"
           :row-key="list.id"
@@ -100,6 +101,7 @@
             :total="total"
             :current-page="queryParams.page"
             :page-size="queryParams.pagesize"
+            @current-change="changePage"
           />
         </el-row>
       </div>
@@ -186,7 +188,8 @@ export default {
       ],
       inputValue: '',
       formData: {},
-      idGroup: []
+      idGroup: [],
+      isLoading: false// 遮罩
     }
   },
   // 初始化加载数据转化树形
@@ -225,10 +228,12 @@ export default {
     },
     // 获取员工列表 （先封装api获取列表->定义数据list 封装)
     async getEmployeeList() {
+      this.isLoading = true
       this.loding = true
       const { rows, total } = await getEmployeeList(this.queryParams)
       this.list = rows
       this.total = total
+      this.isLoading = false
       // this.loding = false
     },
     // 切换页码
@@ -236,6 +241,7 @@ export default {
       this.queryParams.page = newPage // 赋值新页码
       this.getEmployeeList() // 查询数据
     },
+
     // 模糊查询
     changeValue() {
       clearTimeout(this.timer)// 防抖处理
@@ -260,8 +266,6 @@ export default {
     getRole(id) {
       this.$refs.centerDialogVisible.getRole(id)
     },
-
-   
 
     // handleSelectionChange(selectedRows) {
     //   this.selectedRows = selectedRows
@@ -308,7 +312,7 @@ export default {
       this.inputValue = ''
     }
   }
-  
+}
 </script>
 
 <style lang="scss" scoped>
