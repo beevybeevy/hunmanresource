@@ -17,6 +17,14 @@
           <i class="el-icon-setting" />
         </div>
         <el-dropdown-menu slot="dropdown" class="user-dropdown">
+          <router-link to="/">
+            <el-dropdown-item>
+              首页
+            </el-dropdown-item>
+          </router-link>
+          <a target="_blank" href="https://gitee.com/beevy/who-cares.git">
+            <el-dropdown-item>项目地址</el-dropdown-item>
+          </a>
           <!-- prevent: 阻止默认事件 -->
           <!-- native: 绑定原生事件 -->
           <el-dropdown-item @click.native="updatePassword">
