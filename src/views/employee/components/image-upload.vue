@@ -26,7 +26,7 @@ export default {
     // 检查函数 判断文件的类型还有大小 return  true(继续上传)/false(停止上传)
     beforeAvatarUpload(file) {
       // jpeg png gif bmp
-
+      // 上传照片规则校验
       const isJPG = ['image/jpeg', 'image/png', 'image/gif', 'image/bmp'].includes(file.type)
       const isLt2M = file.size / 1024 / 1024 < 5 // 5M
 
