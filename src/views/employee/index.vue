@@ -259,9 +259,9 @@ export default {
     // 显示员工角色
     getRole(id) {
       this.$refs.centerDialogVisible.getRole(id)
-    }
-  }
     },
+
+   
 
     // handleSelectionChange(selectedRows) {
     //   this.selectedRows = selectedRows
@@ -307,9 +307,8 @@ export default {
       this.selectedOption = ''
       this.inputValue = ''
     }
+  }
   
-
-
 </script>
 
 <style lang="scss" scoped>
