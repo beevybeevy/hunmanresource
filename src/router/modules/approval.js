@@ -9,6 +9,7 @@ export default {
     meta: {
       title: '审批',
       icon: 'tree-table'
+
     }
   }]
 }
