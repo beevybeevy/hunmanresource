@@ -23,7 +23,7 @@ Vue.use(ElementUI, { locale })
 Vue.config.productionTip = false
 Vue.directive('per', {
   inserted(el, binding) {
-    console.log(el, binding)
+    // console.log(el, binding)
     const value = binding.value
     if (!store.getters.points.includes(value)) {
       el.remove()

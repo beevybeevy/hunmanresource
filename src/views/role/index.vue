@@ -153,7 +153,7 @@ export default {
       await addRole(this.form.name, this.form.description, this.form.state)
       this.dialogFormVisible = false
       this.$refs.newContent.resetFields()
-      if (this.total % 5 === 0) {
+      if (this.total % this.pagesize === 0) {
         this.total++
       }
       this.page = Math.ceil(this.total / this.pagesize)
@@ -187,7 +187,9 @@ export default {
       this.selectedID = id
       const res = await getPermissionList(id)
       // console.log(res)
-      this.permissionData = this.transformData(res, 0)
+      const result = res.filter(item => item.enVisible === '1')
+      // console.log(result)
+      this.permissionData = this.transformData(result, 0)
       // console.log(this.permissionData)
       const secondRes = await getRoleDetail(id)
       // console.log(secondRes)
