@@ -5,6 +5,29 @@
     <breadcrumb class="breadcrumb-container" />
 
     <div class="right-menu">
+      <!-- 接收消息的按钮 -->
+
+      <el-popover
+        ref="customPopover"
+        placement="top-start"
+        title="未读信息"
+        width="400"
+        trigger="hover"
+      >
+        <div v-for="(item) in info" :key="item.id" class="card">
+
+          <el-button v-if="item.type===1" type="success" size="mini">通知</el-button>
+          <el-button v-else-if="item.type===2" type="info" size="mini">提示</el-button>
+          <el-button v-else-if="item.type===3" type="warning" size="mini">重要</el-button>
+          <el-button v-else type="danger" size="mini">紧急</el-button>
+          <i class="el-icon-close" @click="closePopover" />
+          <p>{{ item.content }}</p>
+          <p>{{ item.update_time }}</p>
+        </div>
+        <i slot="reference" class="el-icon-message" @click="receiveMessage" />
+
+      </el-popover>
+
       <el-dropdown class="avatar-container" trigger="click">
         <div class="avatar-wrapper">
 
@@ -76,6 +99,8 @@ import { mapGetters } from 'vuex'
 import Breadcrumb from '@/components/Breadcrumb'
 import Hamburger from '@/components/Hamburger'
 import { updatePassword } from '@/api/user'
+import { receiveInfo } from '@/api/message'
+
 import Navbarli from './Navbarli.vue'// 引入更新头像组件
 export default {
   components: {
@@ -113,7 +138,8 @@ export default {
             }
           }
         }] // 确认密码字段
-      }
+      },
+      info: []
     }
   },
   computed: {
@@ -153,6 +179,14 @@ export default {
       this.$refs.passForm.resetFields() // 重置表单
       // 关闭弹层
       this.showDialog = false
+    },
+    async receiveMessage() {
+      const res = await receiveInfo()
+      this.info = res.unread
+      console.log(this.info)
+    },
+    closePopover() {
+      this.$refs.customPopover.doClose()
     }
   }
 }
@@ -160,6 +194,12 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+
+.card{
+  border: 5px #5a5e66;
+  width:400px;
+  border-radius: 10px;
+}
 .navbar {
   height: 50px;
   overflow: hidden;
@@ -247,5 +287,14 @@ export default {
       }
     }
   }
+}
+
+.el-icon-message{
+  font-size: 23px;
+  margin-bottom: 15px;
+}
+.el-icon-close{
+  position:right;
+  margin-left:300px
 }
 </style>
