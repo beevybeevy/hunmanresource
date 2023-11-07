@@ -7,8 +7,7 @@
     <div class="right-menu">
       <el-dropdown class="avatar-container" trigger="click">
         <div class="avatar-wrapper">
-          <!-- <img :src="avatar+'?imageView2/1/w/80/h/80'" class="user-avatar">
-          <i class="el-icon-caret-bottom" /> -->
+
           <!-- 头像 -->
           <img v-if="avatar" :src="avatar" class="user-avatar">
           <span v-else class="username">{{ name ? name[0] : '管' }}</span>
@@ -61,7 +60,6 @@
         </el-form-item>
       </el-form>
     </el-dialog>
-
     <!--修改头像 弹框-->
     <el-dialog
       title="更新头像"
@@ -81,12 +79,12 @@ import { mapGetters } from 'vuex'
 import Breadcrumb from '@/components/Breadcrumb'
 import Hamburger from '@/components/Hamburger'
 import { updatePassword } from '@/api/user'
-import Navbarli from './Navbarli.vue'
+import Navbarli from './Navbarli.vue'// 引入更新头像组件
 export default {
   components: {
     Breadcrumb,
     Hamburger,
-    Navbarli
+    Navbarli//
 
   },
   data() {
@@ -251,9 +249,6 @@ export default {
         }
       }
     }
-    // .barli{
-    //   width: 150px;
-    // }
   }
 }
 </style>
