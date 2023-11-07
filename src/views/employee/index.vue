@@ -111,7 +111,7 @@ import {
 } from '@/api/department'
 
 import ImportExcel from './components/import-excel.vue'// 导入员工导入组件
-import BoxRole from './components/box-role.vue'
+import BoxRole from './components/box-role.vue' // 分配角色导入
 export default {
   name: 'Department',
   components: {
