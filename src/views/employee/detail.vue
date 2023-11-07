@@ -98,11 +98,8 @@
 </template>
 
 <script>
-// 获取新增员工   获取编辑员工   获取员工详情
 import { addEmployee, editEmployee, getEmployeeDetail } from '@/api/department'
-// 部门 (级联组件)
 import SelectTree from './components/select-tree.vue'
-// 上传头像
 import imageUpload from './components/image-upload.vue'
 export default {
   components: { SelectTree, imageUpload },
@@ -126,35 +123,32 @@ export default {
         // 手机号校验
         mobile: [
           { required: true, message: '请输入手机号', trigger: 'blur' },
-          //   pattern 正则表达式
-          { pattern: /^1[3-9]\d{9}$/, message: '手机号格式不正确', trigger: 'blur' }
+          { //   pattern 正则表达式
+            pattern: /^1[3-9]\d{9}$/, message: '手机号格式不正确', trigger: 'blur'
+          }
         ],
-        // 聘用形式
         formOfEmployment: [{ required: true, message: '请选择聘用形式', trigger: 'blur' }],
-        // 部门
         departmentId: [{ required: true, message: '请选择部门', trigger: 'blur' }],
-        // 入职时间
         timeOfEntry: [{ required: true, message: '请选择入职时间', trigger: 'blur' }],
-        // 转正时间
-        correctionTime: [{ required: true, message: '请选择转正时间', trigger: 'blur' },
-          {
-            validator: (rule, value, callback) => {
-              if (this.FormData.timeOfEntry) {
-                if (new Date(this.FormData.timeOfEntry) > new Date(value)) {
-                  callback(new Error('转正时间不能小于入职时间'))
-                  return
-                }
+        correctionTime: [{
+          required: true, message: '请选择转正时间', trigger: 'blur'
+        }, {
+          validator: (rule, value, callback) => {
+            if (this.FormData.timeOfEntry) {
+              if (new Date(this.FormData.timeOfEntry) > new Date(value)) {
+                callback(new Error('转正时间不能小于入职时间'))
+                return
               }
-              callback()
             }
-          }]
+            callback()
+          }
+        }]
       }
     }
   },
   created() {
     // 如何获取路由参数的中id
     // if (this.$route.params.id) { this.getEmployeeDetail() }
-    // 员工详情id
     this.$route.params.id && this.getEmployeeDetail()
   },
   methods: {
