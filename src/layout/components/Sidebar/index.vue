@@ -43,6 +43,7 @@ export default {
         return meta.activeMenu
       }
       return path
+      // return this.$route.meta.GuidePath ? this.$route.meta.JumpPath : this.$route.path
     },
     showLogo() {
       return this.$store.state.settings.sidebarLogo
@@ -53,6 +54,13 @@ export default {
     isCollapse() {
       return !this.sidebar.opened
     }
+  },
+  watch: {
+    $route: ''
   }
 }
 </script>
+
+<style scoped>
+
+</style>

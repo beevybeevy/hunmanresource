@@ -108,3 +108,23 @@ export function assignRole(data) {
     data
   })
 }
+
+// 删除部门
+export function delDepartment(id) {
+  return request.delete(`/company/department/${id}`)
+}
+
+// 新增部门
+export function addDepartment(data) {
+  return request.post(`/company/department`, data)
+}
+
+// 修改部门
+export function amendDepartment(data) {
+  return request.put(`/company/department/${data.id}`, data)
+}
+
+// 回显部门
+export function echoDepartment(id) {
+  return request.get(`/company/department/${id}`)
+}
