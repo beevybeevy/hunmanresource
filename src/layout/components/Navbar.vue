@@ -34,8 +34,11 @@
           <el-dropdown-item @click.native="updatePassword">
             <span style="display:block;">修改密码</span>
           </el-dropdown-item>
+          <el-dropdown-item>
+            <span style="display:block;" @click="dialogVisible=true">更新头像</span>
+          </el-dropdown-item>
           <el-dropdown-item divided @click.native="logout">
-            <span style="display:block;">登出</span>
+            <span type="text" style="display:block;">登出</span>
           </el-dropdown-item>
         </el-dropdown-menu>
       </el-dropdown>
@@ -58,23 +61,39 @@
         </el-form-item>
       </el-form>
     </el-dialog>
+
+    <!--修改头像 弹框-->
+    <el-dialog
+      title="更新头像"
+      :visible.sync="dialogVisible"
+      width="50%"
+      center
+      @update="update(re)"
+    >
+      <Navbarli />
+    </el-dialog>
   </div>
 </template>
 
 <script>
+
 import { mapGetters } from 'vuex'
 import Breadcrumb from '@/components/Breadcrumb'
 import Hamburger from '@/components/Hamburger'
 import { updatePassword } from '@/api/user'
-
+import Navbarli from './Navbarli.vue'
 export default {
   components: {
     Breadcrumb,
-    Hamburger
+    Hamburger,
+    Navbarli
+
   },
   data() {
     return {
       showDialog: false,
+      dialogVisible: false,
+
       passForm: {
         oldPassword: '', // 旧密码
         newPassword: '', // 新密码
@@ -106,7 +125,7 @@ export default {
     // 引入头像和用户名称
     ...mapGetters([
       'sidebar',
-      'avatar',
+      'avatar', // 映射头像
       'name'
     ])
   },
@@ -142,6 +161,7 @@ export default {
     }
   }
 }
+
 </script>
 
 <style lang="scss" scoped>
@@ -231,6 +251,9 @@ export default {
         }
       }
     }
+    // .barli{
+    //   width: 150px;
+    // }
   }
 }
 </style>
