@@ -3,7 +3,11 @@
     <div class="app-container">
       <el-button type="primary" size="mini" class="role-button" @click="dialogFormVisible = true">添加角色</el-button>
       <el-table v-loading="isLoading" class="table" :data="tableData" style="width: 100%" border :header-cell-style="{background: '#f5f6f8'}">
-        <el-table-column prop="id" label="序号" width="180" />
+        <el-table-column prop="id" label="序号" width="180">
+          <template v-slot="{ row }">
+            <span>{{ row.index }}</span>
+          </template>
+        </el-table-column>
         <el-table-column prop="name" label="角色" width="180">
           <template v-slot="{ row }">
             <el-input v-if="row.isEdit" v-model="row.editData.name" />
@@ -27,7 +31,7 @@
           <!-- 点击编辑后的两个按钮 -->
           <template v-slot="{ row }">
             <template v-if="row.isEdit">
-              <el-button type="primary" size="mini" @click="submitEdit(row.editData)">确定</el-button>
+              <el-button type="primary" size="mini" @click="submitEdit(row)">确定</el-button>
               <el-button type="text" @click="row.isEdit = false">取消</el-button>
             </template>
             <template v-else>
@@ -137,7 +141,9 @@ export default {
       this.tableData = res.rows
       this.total = res.total
       this.isLoading = false
-      this.tableData.forEach(item => {
+      this.tableData.forEach((item, index) => {
+        const idx = (this.page - 1) * this.pagesize + index + 1
+        this.$set(item, 'index', idx)
         this.$set(item, 'isEdit', false)
         this.$set(item, 'editData', {
           name: item.name,
@@ -175,24 +181,23 @@ export default {
     editItem(row) {
       row.isEdit = true
     },
-    async submitEdit(obj) {
+    async submitEdit(row) {
       // console.log(id, obj)
-
-      await editRole(obj)
-      this.$message.success('更新数据成功')
-      // this.renderPage()
-      this.renderPage()
+      row.name = row.editData.name
+      row.state = row.editData.state
+      row.description = row.editData.description
+      editRole(row.editData).then(() => {
+        this.$message.success('更新数据成功')
+        // this.renderPage()
+        row.isEdit = false
+      }).catch(() => {})
     },
     async distributeDialog(id) {
       this.selectedID = id
       const res = await getPermissionList(id)
-      // console.log(res)
       const result = res.filter(item => item.enVisible === '1')
-      // console.log(result)
       this.permissionData = this.transformData(result, 0)
-      // console.log(this.permissionData)
       const secondRes = await getRoleDetail(id)
-      // console.log(secondRes)
       this.permissionArray = secondRes.permIds
       this.dialogVisible = true
     },

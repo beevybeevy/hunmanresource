@@ -10,21 +10,44 @@
       <el-popover
         ref="customPopover"
         placement="top-start"
-        title="未读信息"
+        title=""
         width="400"
         trigger="hover"
       >
-        <div v-for="(item) in info" :key="item.id" class="card">
 
-          <el-button v-if="item.type===1" type="success" size="mini">通知</el-button>
-          <el-button v-else-if="item.type===2" type="info" size="mini">提示</el-button>
-          <el-button v-else-if="item.type===3" type="warning" size="mini">重要</el-button>
-          <el-button v-else type="danger" size="mini">紧急</el-button>
-          <i class="el-icon-close" @click="closePopover" />
-          <p>{{ item.content }}</p>
-          <p>{{ item.update_time }}</p>
-        </div>
-        <i slot="reference" class="el-icon-message" @click="receiveMessage" />
+        <el-tabs>
+          <el-tab-pane :label="`未读${unread.length}条`" name="first">
+            <div v-for="(item) in unread" :key="item.id" class="card">
+              <el-button v-if="item.type===1" type="success" size="mini">通知</el-button>
+              <el-button v-else-if="item.type===2" type="info" size="mini">提示</el-button>
+              <el-button v-else-if="item.type===3" type="warning" size="mini">重要</el-button>
+              <el-button v-else type="danger" size="mini">紧急</el-button>
+              <i class="el-icon-close" @click="closePopover(item.id)" />
+              <br>
+              <i class="el-icon-document-checked" @click="handleRead(item.id)" />
+
+              <p>{{ item.content }}</p>
+              <p>{{ item.update_time }}</p>
+            </div>
+          </el-tab-pane>
+          <el-tab-pane :label="`已读${read.length}条`" name="second">
+            <div v-for="(item) in read" :key="item.id" class="card">
+              <el-button v-if="item.type===1" type="success" size="mini">通知</el-button>
+              <el-button v-else-if="item.type===2" type="info" size="mini">提示</el-button>
+              <el-button v-else-if="item.type===3" type="warning" size="mini">重要</el-button>
+              <el-button v-else type="danger" size="mini">紧急</el-button>
+              <i class="el-icon-close" @click="closePopover(item.id)" />
+              <br>
+              <i class="el-icon-document-checked" @click="handleRead(item.id)" />
+              <p>{{ item.content }}</p>
+              <p>{{ item.update_time }}</p>
+
+            </div>
+          </el-tab-pane>
+        </el-tabs>
+
+        <i v-if="unread.length>0" slot="reference" class="el-icon-message-solid" @click="receiveMessage" />
+        <i v-else slot="reference" class="el-icon-bell" @click="receiveMessage" />
 
       </el-popover>
 
@@ -100,7 +123,7 @@ import { mapGetters } from 'vuex'
 import Breadcrumb from '@/components/Breadcrumb'
 import Hamburger from '@/components/Hamburger'
 import { updatePassword } from '@/api/user'
-import { receiveInfo } from '@/api/message'
+import { receiveInfo, deletMessage, read } from '@/api/message'
 
 import Navbarli from './Navbarli.vue'// 引入更新头像组件
 export default {
@@ -140,7 +163,9 @@ export default {
           }
         }] // 确认密码字段
       },
-      info: []
+      unread: [],
+      read: [],
+      activeName: 'first'
     }
   },
   computed: {
@@ -150,6 +175,9 @@ export default {
       'avatar', // 映射头像
       'name'
     ])
+  },
+  created() {
+    setInterval(this.receiveMessage, 2000)
   },
   methods: {
     toggleSideBar() {
@@ -183,11 +211,18 @@ export default {
     },
     async receiveMessage() {
       const res = await receiveInfo()
-      this.info = res.unread
-      console.log(this.info)
+      this.unread = res.unread
+      this.read = res.read
+      // console.log(this.info)
     },
-    closePopover() {
-      this.$refs.customPopover.doClose()
+    async closePopover(id) {
+      await deletMessage(id)
+      if (this.unread.length === 0 || this.read.length === 0) {
+        this.$refs.customPopover.doClose()
+      }
+    },
+    async handleRead(id) {
+      await read(id)
     }
   }
 }

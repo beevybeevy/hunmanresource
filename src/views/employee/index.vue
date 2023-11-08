@@ -278,7 +278,7 @@ export default {
     canOpen() {
       if (this.selectedRows.length > 0) {
         this.dialogFormVisible = true
-        console.log(11)
+        // console.log(11)
       } else {
         this.$message.warning('请选择联系人')
         return
