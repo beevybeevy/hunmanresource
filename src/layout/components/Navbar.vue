@@ -38,7 +38,6 @@
               <el-button v-else type="danger" size="mini">紧急</el-button>
               <i class="el-icon-close" @click="closePopover(item.id)" />
               <br>
-              <i class="el-icon-document-checked" @click="handleRead(item.id)" />
               <p>{{ item.content }}</p>
               <p>{{ item.update_time }}</p>
 
