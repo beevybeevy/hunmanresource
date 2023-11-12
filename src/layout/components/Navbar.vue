@@ -12,7 +12,7 @@
         placement="top-start"
         title=""
         width="400"
-        trigger="hover"
+        trigger="click"
       >
 
         <el-tabs>
@@ -22,8 +22,10 @@
               <el-button v-else-if="item.type===2" type="info" size="mini">提示</el-button>
               <el-button v-else-if="item.type===3" type="warning" size="mini">重要</el-button>
               <el-button v-else type="danger" size="mini">紧急</el-button>
+              <!-- 删除按钮 -->
               <i class="el-icon-close" @click="closePopover(item.id)" />
               <br>
+              <!-- 标为已读按钮 -->
               <i class="el-icon-document-checked" @click="handleRead(item.id)" />
 
               <p>{{ item.content }}</p>
@@ -45,11 +47,11 @@
           </el-tab-pane>
         </el-tabs>
 
-        <i v-if="unread.length>0" slot="reference" class="el-icon-message-solid" @click="receiveMessage" />
-        <i v-else slot="reference" class="el-icon-bell" @click="receiveMessage" />
-
       </el-popover>
-
+      <el-badge v-popover:customPopover :value="unread.length" class="item" :hidden="unread.length<1">
+        <!-- <i v-if="unread.length>0" slot="reference" class="el-icon-message-solid" @click="receiveMessage" /> -->
+        <i class="el-icon-bell" @click="receiveMessage" />
+      </el-badge>
       <el-dropdown class="avatar-container" trigger="click">
         <div class="avatar-wrapper">
 
@@ -176,7 +178,11 @@ export default {
     ])
   },
   created() {
-    setInterval(this.receiveMessage, 2000)
+    this.timer = setInterval(this.receiveMessage, 2000)
+  },
+
+  destroyed() {
+    clearInterval(this.timer)
   },
   methods: {
     toggleSideBar() {
@@ -212,7 +218,7 @@ export default {
       const res = await receiveInfo()
       this.unread = res.unread
       this.read = res.read
-      // console.log(this.info)
+      // console.log(this.read)
     },
     async closePopover(id) {
       await deletMessage(id)

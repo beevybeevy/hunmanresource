@@ -31,3 +31,9 @@ export function uploadImg(staffPhoto = '') {
     staffPhoto
   })
 }
+
+// 二维码登录接口
+
+export function getQRCode() {
+  return request.get('/sys/qrcodeKey')
+}

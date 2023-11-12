@@ -6,7 +6,13 @@
       <el-card shadow="never" class="login-card">
         <!--登录表单-->
         <!-- el-form > el-form-item > el-input -->
-        <el-form ref="form" :model="loginForm" :rules="loginRules">
+        <!-- 二维码登录 -->
+        <!-- <div v-if="showQRLogin" ref="qrcode" /> -->
+        <div v-if="showQRLogin">
+          <img id="qrcode" :src="qrCodeDataURL" alt="QR Code">
+        </div>
+        <!-- 手机号登录 -->
+        <el-form v-else ref="form" :model="loginForm" :rules="loginRules">
           <el-form-item prop="mobile">
             <el-input v-model="loginForm.mobile" placeholder="请输入手机号" />
           </el-form-item>
@@ -22,13 +28,21 @@
             <el-button style="width:350px" type="primary" @click="login">登录</el-button>
           </el-form-item>
         </el-form>
-      </el-card></div>
+
+        <el-button @click="changeLoginWay1">手机号登录</el-button>
+        <el-button @click="changeLoginWay2">扫码登陆</el-button>
+      </el-card>
+    </div>
   </div></template>
 <script>
+import { getQRCode } from '@/api/user'
+import QRCode from 'qrcode'
 export default {
   name: 'Login',
   data() {
     return {
+      qrCodeDataURL: '',
+      showQRLogin: false,
       loginForm: {
         mobile: '13800000002',
         password: 'hm#qd@23!',
@@ -77,11 +91,34 @@ export default {
           this.$router.push('/')
         }
       })
+    },
+    changeLoginWay1() {
+      this.showQRLogin = false
+    },
+    async changeLoginWay2() {
+      this.showQRLogin = true
+      const encryptionString = await getQRCode()
+      console.log(encryptionString)
+      // QRCode.toCanvas(this.$refs.qrcode, encryptionString, function(error) {
+      //   if (error) console.error(error)
+      //   console.log('QR Code generated!')
+      // })
+      QRCode.toDataURL(encryptionString, (error, url) => {
+        if (error) {
+          console.error(error)
+          return
+        }
+        this.qrCodeDataURL = url // 将生成的二维码DataURL保存到数据中
+      })
     }
   }
 }
 </script>
 <style lang="scss">
+#qrcode {
+  width: 300px;
+  height: 300px;
+}
 .login-container {
   display: flex;
   align-items: stretch;

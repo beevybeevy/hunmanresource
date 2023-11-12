@@ -33,17 +33,17 @@
       <div class="right">
         <!-- el-row 行 ，type布局模式，justify flex的布局下的水平排列方式-->
         <el-row class="opeate-tools" type="flex" justify="end">
-          <el-button v-per="'offtButton'" size="mini" @click="canOpen">群发信息</el-button>
-          <el-button v-per="'offtButton'" size="mini" type="primary" @click="$router.push('/employee/detail')">添加员工</el-button>
+          <el-button size="mini" @click="canOpen">群发信息</el-button>
+          <el-button size="mini" type="primary" @click="$router.push('/employee/detail')">添加员工</el-button>
           <!-- @click="showDialog = true;"点击出现导入弹层 -->
-          <el-button v-per="'offtButton'" size="mini" @click="showDialog = true;">excel导入</el-button>
+          <el-button size="mini" @click="showDialog = true;">excel导入</el-button>
           <el-popover v-model="visible" placement="top" width="160">
             <p>文件确定导出吗？</p>
             <div style="text-align: right; margin: 0">
               <el-button size="mini" type="text" @click="visible = false">取消</el-button>
               <el-button type="primary" size="mini" @click="visible = false; exportEmployeeExecel()">确定</el-button>
             </div>
-            <el-button slot="reference" v-per="'offtButton'" class="jiege" size="mini">excel导出</el-button>
+            <el-button slot="reference" class="jiege" size="mini">excel导出</el-button>
           </el-popover>
         </el-row>
         <!-- 表格组件 -->
@@ -107,19 +107,21 @@
     <ImportExcel :show-excel-dialog.sync="showDialog" />
     <!-- 群发信息的弹框 -->
     <el-dialog title="群发信息" :visible.sync="dialogFormVisible">
-      <div class="input">
-        <el-tag v-for="(item, index) in selectedRows" :key="index" closable @close="handleTagClose(index)">
-          {{ '@' + item.username }}
-        </el-tag>
-      </div>
       <el-form ref="messageBox">
+        <el-form-item>
+          <div class="inputTag">
+            <el-tag v-for="(item, index) in selectedRows" :key="index" closable @close="handleTagClose(index,item)">
+              {{ '@' + item.username }}
+            </el-tag>
+          </div>
+        </el-form-item>
         <el-form-item label="消息等级">
           <el-select v-model="selectedOption" placeholder="请选择">
             <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value" />
           </el-select>
         </el-form-item>
         <el-form-item label="通知内容">
-          <el-input v-model="inputValue" clearable />
+          <el-input v-model="inputValue" clearable class="textarea" />
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -289,8 +291,9 @@ export default {
       this.idGroup = selectedRows.map(item => item.id)
       // console.log(selectedRows)
     },
-    handleTagClose(index) {
+    handleTagClose(index, item) {
       this.selectedRows.splice(index, 1)
+      this.$refs.myTable.toggleRowSelection(item, false)
     },
     async handleSubmit() {
       this.dialogFormVisible = false
@@ -353,11 +356,20 @@ export default {
       margin-bottom: 10px;
       padding:20px
     }
-    .input{
-      border: 1px solid gray;
-      padding:10px
-    }
 
   }
+
 }
+.inputTag{
+      border: 1px solid #dcd2d2;
+      padding:10px;
+      border-radius: 10px;
+    }
+    .textarea{
+      position: relative;
+    display: inline-block;
+    width: 100%;
+    vertical-align: bottom;
+    font-size: 14px;
+    }
 </style>
