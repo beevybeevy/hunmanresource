@@ -17,33 +17,42 @@
 
         <el-tabs>
           <el-tab-pane :label="`未读${unread.length}条`" name="first">
-            <div v-for="(item) in unread" :key="item.id" class="card">
-              <el-button v-if="item.type===1" type="success" size="mini">通知</el-button>
-              <el-button v-else-if="item.type===2" type="info" size="mini">提示</el-button>
-              <el-button v-else-if="item.type===3" type="warning" size="mini">重要</el-button>
-              <el-button v-else type="danger" size="mini">紧急</el-button>
-              <!-- 删除按钮 -->
-              <i class="el-icon-close" @click="closePopover(item.id)" />
-              <br>
-              <!-- 标为已读按钮 -->
-              <i class="el-icon-document-checked" @click="handleRead(item.id)" />
-
-              <p>{{ item.content }}</p>
-              <p>{{ item.update_time }}</p>
-            </div>
+            <el-card v-for="(item) in unread" :key="item.id" class="card">
+              <div class="card-content">
+                <el-row type="flex" justify="space-between" align="middle" class="row-item">
+                  <div>
+                    <span v-if="item.type===1" class="el-tag--success">通知</span>
+                    <span v-else-if="item.type===2" class="el-tag--info">提示</span>
+                    <span v-else-if="item.type===3" class="el-tag--warning">重要</span>
+                    <span v-else class="el-tag--danger">紧急</span>
+                    <span>{{ item.content }}</span>
+                  </div>
+                  <!-- 删除按钮 -->
+                  <i class="el-icon-close" @click="closePopover(item.id)" />
+                </el-row>
+                <!-- 标为已读按钮 -->
+                <div class="content">
+                  <i class="el-icon-document-checked" @click="handleRead(item.id)" />
+                  <p>{{ item.update_time }}</p>
+                </div>
+              </div>
+            </el-card>
           </el-tab-pane>
           <el-tab-pane :label="`已读${read.length}条`" name="second">
-            <div v-for="(item) in read" :key="item.id" class="card">
-              <el-button v-if="item.type===1" type="success" size="mini">通知</el-button>
-              <el-button v-else-if="item.type===2" type="info" size="mini">提示</el-button>
-              <el-button v-else-if="item.type===3" type="warning" size="mini">重要</el-button>
-              <el-button v-else type="danger" size="mini">紧急</el-button>
-              <i class="el-icon-close" @click="closePopover(item.id)" />
-              <br>
-              <p>{{ item.content }}</p>
-              <p>{{ item.update_time }}</p>
-
-            </div>
+            <el-card v-for="(item) in read" :key="item.id" class="card">
+              <div class="card-content">
+                <el-row type="flex" justify="space-between" align="middle" class="row-item">
+                  <div>
+                    <span v-if="item.type===1" class="el-tag--success">通知</span>
+                    <span v-else-if="item.type===2" class="el-tag--info">提示</span>
+                    <span v-else-if="item.type===3" class="el-tag--warning">重要</span>
+                    <span v-else class="el-tag--danger">紧急</span>
+                    <span>{{ item.content }}</span>
+                  </div>
+                  <i class="el-icon-close" @click="closePopover(item.id)" />
+                </el-row>
+                <p style="text-align: right;">{{ item.update_time }}</p>
+              </div></el-card>
           </el-tab-pane>
         </el-tabs>
 
@@ -238,7 +247,8 @@ export default {
 
 .card{
   border: 5px #5a5e66;
-  width:400px;
+  width:380px;
+  height:120px;
   border-radius: 10px;
 }
 .navbar {
@@ -334,8 +344,90 @@ export default {
   font-size: 23px;
   margin-bottom: 15px;
 }
-.el-icon-close{
-  position:right;
-  margin-left:300px
+el-button{
+  display: inline-block;
+}
+.el-tag--success{
+  background-color: #f0f9eb;
+    border-color: #e1f3d8;
+    color: #67c23a;
+    height: 20px;
+    padding: 0 5px;
+    line-height: 19px;
+    font-size: 12px;
+    border-width: 1px;
+    border-style: solid;
+    border-radius: 4px;
+    box-sizing: border-box;
+    white-space: nowrap;
+}
+
+.el-tag--info{
+  background-color: #f4f4f5;
+    border-color: #e9e9eb;
+    color: #909399;
+    height: 20px;
+    padding: 0 5px;
+    line-height: 19px;
+    font-size: 12px;
+    border-width: 1px;
+    border-style: solid;
+    border-radius: 4px;
+    box-sizing: border-box;
+    white-space: nowrap;
+}
+
+.el-tag--warning{
+  background-color: #fdf6ec;
+    border-color: #faecd8;
+    color: #e6a23c;
+    height: 20px;
+    padding: 0 5px;
+    line-height: 19px;
+    font-size: 12px;
+    border-width: 1px;
+    border-style: solid;
+    border-radius: 4px;
+    box-sizing: border-box;
+    white-space: nowrap;
+}
+
+.el-tag--danger{
+  background-color: #fef0f0;
+    border-color: #fde2e2;
+    color: #f56c6c;
+    height: 20px;
+    padding: 0 5px;
+    line-height: 19px;
+    font-size: 12px;
+    border-width: 1px;
+    border-style: solid;
+    border-radius: 4px;
+    box-sizing: border-box;
+    white-space: nowrap;
+}
+.row-item {
+  padding-right:10px;
+}
+p{
+  margin-top:30px
+}
+.el-icon-document-checked{
+  margin-top: 10px;
+  font-size: 16px;
+}
+.content{
+  display: flex;
+  justify-content: space-between;
+}
+.card-content{
+  margin-bottom: 10px;
+}
+.el-icon-bell{
+  font-size: 25px;
+  margin-bottom: 10px;
+}
+.item{
+  margin-right: 15px;
 }
 </style>
