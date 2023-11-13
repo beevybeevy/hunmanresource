@@ -37,3 +37,13 @@ export function uploadImg(staffPhoto = '') {
 export function getQRCode() {
   return request.get('/sys/qrcodeKey')
 }
+
+// 获取二维码状态
+
+export function getQRCodeStatus(string) {
+  return request.get('/sys/qrcodeState', {
+    params: {
+      qrcode_key: string
+    }}
+  )
+}

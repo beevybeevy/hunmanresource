@@ -10,6 +10,10 @@
         <!-- <div v-if="showQRLogin" ref="qrcode" /> -->
         <div v-if="showQRLogin">
           <img id="qrcode" :src="qrCodeDataURL" alt="QR Code">
+          <div v-show="Timoutlayer" class="qrcode_layer Timeout">
+            <div>
+              <span>点击刷新 </span> <i class="el-icon-refresh-left" style="color:#f56c6c;" @click="changeLoginWay2" /></div>
+          </div>
         </div>
         <!-- 手机号登录 -->
         <el-form v-else ref="form" :model="loginForm" :rules="loginRules">
@@ -35,12 +39,15 @@
     </div>
   </div></template>
 <script>
-import { getQRCode } from '@/api/user'
+import { getQRCode, getQRCodeStatus } from '@/api/user'
+// import { setToken } from '@/utils/auth'
 import QRCode from 'qrcode'
 export default {
   name: 'Login',
   data() {
     return {
+      layer: false,
+      encryptionString: '',
       qrCodeDataURL: '',
       showQRLogin: false,
       loginForm: {
@@ -99,10 +106,7 @@ export default {
       this.showQRLogin = true
       const encryptionString = await getQRCode()
       console.log(encryptionString)
-      // QRCode.toCanvas(this.$refs.qrcode, encryptionString, function(error) {
-      //   if (error) console.error(error)
-      //   console.log('QR Code generated!')
-      // })
+      this.encryptionString = encryptionString
       QRCode.toDataURL(encryptionString, (error, url) => {
         if (error) {
           console.error(error)
@@ -110,6 +114,24 @@ export default {
         }
         this.qrCodeDataURL = url // 将生成的二维码DataURL保存到数据中
       })
+      // 没有定时器的情况下才开启定时器
+      if (!this.timer) { this.timer = setInterval(this.getQRCodeStatusInfo, 2000) }
+    },
+    async getQRCodeStatusInfo() {
+      const response = await getQRCodeStatus(this.encryptionString)
+      console.log(response.codeState)
+      if (response.codeState === 3) {
+        // 需要存入token再跳转
+        console.log(response.token)
+        // setToken(response.token)
+        // 需要存cookie到vuex里面，实时更新
+        this.$store.commit('user/setToken', response.token)
+        this.$router.push('/')
+        clearInterval(this.timer)
+      } else if (response.codeState === 4) {
+        // this.$message.warning('二维码状态已经失效，请刷新')
+        this.layer = true
+      }
     }
   }
 }
@@ -118,6 +140,22 @@ export default {
 #qrcode {
   width: 300px;
   height: 300px;
+}
+.qrcode_layer{
+  position: absolute;
+    width: 150px;
+    height: 150px;
+    left: 80%;
+    top: 50%;
+    -webkit-transform: translate(-75px,-75px);
+    transform: translate(-75px,-75px);
+    opacity: .9;
+    background: #e1dede;
+    font-size: 24px;
+    padding: 9px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 .login-container {
   display: flex;
