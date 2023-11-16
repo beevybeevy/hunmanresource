@@ -8,13 +8,22 @@
         <!-- el-form > el-form-item > el-input -->
         <!-- 二维码登录 -->
         <!-- <div v-if="showQRLogin" ref="qrcode" /> -->
-        <div v-if="showQRLogin">
+        <div v-if="showQRLogin" v-loading="isLoading" class="QRlayer">
           <img id="qrcode" :src="qrCodeDataURL" alt="QR Code">
           <div v-show="Timoutlayer" class="qrcode_layer Timeout">
             <div>
-              <span>点击刷新 </span> <i class="el-icon-refresh-left" style="color:#f56c6c;" @click="changeLoginWay2" /></div>
+              <span>点击刷新 </span> <i class="el-icon-refresh-left" style="color:#f56c6c;" @click="refreshQR" /></div>
+          </div>
+          <div v-show="SuccessLogInlayer" class="qrcode_layer Timeout">
+            <div>
+              <span>扫码成功 </span> <i class="el-icon-check" style="color:#76c84d;" /></div>
+          </div>
+          <div v-show="CancelLayer" class="qrcode_layer Timeout">
+            <div>
+              <span>取消登录 </span> <i class="el-icon-refresh-left" style="color:#f56c6c;" @click="refreshQR" /></div>
           </div>
         </div>
+
         <!-- 手机号登录 -->
         <el-form v-else ref="form" :model="loginForm" :rules="loginRules">
           <el-form-item prop="mobile">
@@ -32,9 +41,10 @@
             <el-button style="width:350px" type="primary" @click="login">登录</el-button>
           </el-form-item>
         </el-form>
-
-        <el-button @click="changeLoginWay1">手机号登录</el-button>
-        <el-button @click="changeLoginWay2">扫码登陆</el-button>
+        <div class="loginButton">
+          <el-button @click="changeLoginWay1">手机号登录</el-button>
+          <el-button @click="changeLoginWay2">扫码登陆</el-button>
+        </div>
       </el-card>
     </div>
   </div></template>
@@ -46,10 +56,13 @@ export default {
   name: 'Login',
   data() {
     return {
-      layer: false,
+      Timoutlayer: false,
+      SuccessLogInlayer: false,
+      CancelLayer: false,
       encryptionString: '',
       qrCodeDataURL: '',
       showQRLogin: false,
+      isLoading: false,
       loginForm: {
         mobile: '13800000002',
         password: 'hm#qd@23!',
@@ -103,9 +116,11 @@ export default {
       this.showQRLogin = false
     },
     async changeLoginWay2() {
+      // this.Timoutlayer = true
+      this.isLoading = true
       this.showQRLogin = true
       const encryptionString = await getQRCode()
-      console.log(encryptionString)
+      // console.log(encryptionString)
       this.encryptionString = encryptionString
       QRCode.toDataURL(encryptionString, (error, url) => {
         if (error) {
@@ -114,70 +129,112 @@ export default {
         }
         this.qrCodeDataURL = url // 将生成的二维码DataURL保存到数据中
       })
+      this.isLoading = false
       // 没有定时器的情况下才开启定时器
-      if (!this.timer) { this.timer = setInterval(this.getQRCodeStatusInfo, 2000) }
+      if (this.timer) clearInterval(this.timer)
+      // if (!this.timer) { this.timer = setInterval(this.getQRCodeStatusInfo, 2000) }
+      this.timer = setInterval(this.getQRCodeStatusInfo, 2000)
     },
     async getQRCodeStatusInfo() {
       const response = await getQRCodeStatus(this.encryptionString)
-      console.log(response.codeState)
+      // console.log(response.codeState)
       if (response.codeState === 3) {
         // 需要存入token再跳转
-        console.log(response.token)
-        // setToken(response.token)
+        // console.log(response.token)
         // 需要存cookie到vuex里面，实时更新
         this.$store.commit('user/setToken', response.token)
         this.$router.push('/')
         clearInterval(this.timer)
       } else if (response.codeState === 4) {
         // this.$message.warning('二维码状态已经失效，请刷新')
-        this.layer = true
+        this.Timoutlayer = true
+        clearInterval(this.timer)
+      } else if (response.codeState === 2) {
+        // 扫码成功但是没有点登录
+        this.SuccessLogInlayer = true
+      } else if (response.codeState === 5) {
+        // 取消情况
+        this.SuccessLogInlayer = false
+        this.CancelLayer = true
+        clearInterval(this.timer)
       }
+    },
+    refreshQR() {
+      this.Timoutlayer = false
+      this.SuccessLogInlayer = false
+      this.CancelLayer = false
+      this.changeLoginWay2()
     }
   }
 }
 </script>
 <style lang="scss">
+.QRlayer {
+  position: relative;
+  // .tipLayer{
+  //   position: absolute;
+  //   top:50%;
+  //   left:50%
+  // }
+  width: 303px;
+}
+
+.loginButton {
+  width: 350px;
+  height: 280px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  button {
+    flex: 1;
+  }
+}
+
 #qrcode {
   width: 300px;
   height: 300px;
 }
-.qrcode_layer{
+
+.qrcode_layer {
   position: absolute;
-    width: 150px;
-    height: 150px;
-    left: 80%;
-    top: 50%;
-    -webkit-transform: translate(-75px,-75px);
-    transform: translate(-75px,-75px);
-    opacity: .9;
-    background: #e1dede;
-    font-size: 24px;
-    padding: 9px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+  width: 150px;
+  height: 150px;
+  left: 50%;
+  top: 50%;
+  // -webkit-transform: translate(-75px,-75px);
+  transform: translate(-50%, -50%);
+  opacity: .9;
+  background: #e1dede;
+  font-size: 24px;
+  padding: 9px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
+
 .login-container {
   display: flex;
   align-items: stretch;
   height: 100vh;
+
   .logo {
     flex: 3;
-    background: rgba(38, 72, 176) url(../../assets/common/login_back.png)
-      no-repeat center / cover;
+    background: rgba(38, 72, 176) url(../../assets/common/login_back.png) no-repeat center / cover;
     border-top-right-radius: 60px;
     display: flex;
     flex-direction: column;
     align-items: flex-end;
     justify-content: center;
     padding: 0 100px;
+
     .icon {
-      background: url(../../assets/common/logo.png) no-repeat 70px center /
-        contain;
+      background: url(../../assets/common/logo.png) no-repeat 70px center / contain;
       width: 300px;
       height: 50px;
       margin-bottom: 50px;
     }
+
     p {
       color: #fff;
       font-size: 18px;
@@ -186,29 +243,35 @@ export default {
       text-align: center;
     }
   }
+
   .form {
     flex: 2;
     display: flex;
     flex-direction: column;
     justify-content: center;
     padding-left: 176px;
+
     .el-card {
       border: none;
       padding: 0;
     }
+
     h1 {
       padding-left: 20px;
       font-size: 24px;
     }
+
     .el-input {
       width: 350px;
       height: 44px;
+
       .el-input__inner {
         background: #f4f5fb;
       }
     }
+
     .el-checkbox {
-      color:#606266;
+      color: #606266;
     }
   }
 }
