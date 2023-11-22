@@ -15,12 +15,16 @@
         </template>
       </page-tools>
       <el-dialog
-        title="提示"
+        title="打卡范围设置"
         :visible.sync="dialogVisible"
         fullscreen
       >
-        <gdMap />
-        <el-button size="mini" @click="dialogVisible = false">取 消</el-button></el-dialog>
+        <div class="map">
+          <gdMap @update="updateShow" />
+          <div />
+        </div>
+        <!-- <el-button size="mini" @click="dialogVisible = false">取 消</el-button> -->
+      </el-dialog>
     </div>
   </div>
 </template>
@@ -39,9 +43,14 @@ export default {
     }
   },
   methods: {
-
+    updateShow() {
+      this.dialogVisible = false
+    }
   }
 }
 </script>
 <style>
+.map{
+  display: flex;
+}
 </style>
