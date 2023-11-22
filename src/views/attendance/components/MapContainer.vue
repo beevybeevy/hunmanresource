@@ -4,7 +4,7 @@
 
     <div class="body">
       <div class="search">
-        <div v-for="item in list" :key="item.id" class="item" :class="{ active: activeId === item.id }" @click="doSearch(item.id)">{{ item.name }}</div>
+        <div v-for="item in list" :key="item.id" class="item" :class="{ active: activeId === item.id }" @click="doSearch(item)">{{ item.name }}</div>
       </div>
       <div class="block" width="300">
         <span class="demonstration">半径</span>
@@ -27,14 +27,12 @@ export default {
     return {
       list: [],
       activeId: 1
+
     }
   },
   mounted() {
     this.initAMap()
     this.getMapList()
-  },
-  unmounted() {
-    this.map?.destroy()
   },
   methods: {
     initAMap() {
@@ -49,7 +47,25 @@ export default {
             viewMode: '3D', // 是否为3D地图模式
             zoom: 11, // 初始化地图级别
             center: [116.397428, 39.90923] // 初始化地图中心点位置
+
           })
+
+          this.marker = new AMap.Marker({
+            icon: 'https://webapi.amap.com/theme/v1.3/markers/n/mark_b.png',
+            position: [116.405467, 39.907761],
+            anchor: 'bottom-center'
+          })
+
+          this.circle = new window.AMap.Circle(
+            { strokeColor: 'blue', strokeWeight: 1, strokeOpacity: 0.5,
+              fillColor: '#009ffa', fillOpacity: 0.3,
+              center: [116.405467, 39.907761],
+              radius: 100
+            }) // 创建圆
+
+          this.map.add(this.marker)
+          this.map.add(this.circle)
+          this.map.setFitView()
         })
         .catch((e) => {
           console.log(e)
@@ -66,8 +82,11 @@ export default {
     updateShow() {
       this.$emit('update', true)
     },
-    doSearch(id) {
-      activeId === id
+    doSearch(item) {
+      this.activeId = item.id
+      this.map.setCenter(item.point)
+      this.circle.setCenter(item.point)
+      this.marker.setPosition(item.point)
     }
   }
 }
