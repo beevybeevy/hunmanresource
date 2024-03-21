@@ -35,8 +35,7 @@
 </template>
 
 <script>
-import {
-  getDepartment, transListToTreeData } from '@/api/department'
+import { getDepartment, transListToTreeData } from '@/api/department'
 
 export default {
   name: 'Department',

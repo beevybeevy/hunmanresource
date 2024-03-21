@@ -15,6 +15,7 @@
 
 <script>
 import COS from 'cos-js-sdk-v5'
+import i18n from '@/lang'
 export default {
   props: {
     value: {
@@ -31,10 +32,10 @@ export default {
       const isLt2M = file.size / 1024 / 1024 < 5 // 5M
 
       if (!isJPG) {
-        this.$message.error('上传头像图片只能是 JPG PNG GIF BMP 格式!')
+        this.$message.error(i18n.t('employee.typeLimit'))
       }
       if (!isLt2M) {
-        this.$message.error('上传头像图片大小不能超过 5MB!')
+        this.$message.error(i18n.t('employee.sizeLimit'))
       }
       return isJPG && isLt2M
     },

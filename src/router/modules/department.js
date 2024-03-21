@@ -1,4 +1,6 @@
 import layout from '@/layout'
+import i18n from '@/lang/index'
+// import Vue from 'vue'
 export default {
   // 路由信息
   path: '/department',
@@ -10,7 +12,10 @@ export default {
     meta: {
       // 路由元信息 存储数据的
       icon: 'tree', // 图标
-      title: '组织' // 标题
+      // title: '111' // 标题
+      title: i18n.t('router.home')
     }
   }]
 }
+
+console.log(i18n.t('message.home'))

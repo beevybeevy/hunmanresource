@@ -1,50 +1,50 @@
 <template>
   <div class="container">
     <div class="app-container">
-      <el-button type="primary" @click="addorechoLevel('add',0,1)">添加权限</el-button>
+      <el-button type="primary" @click="addorechoLevel('add',0,1)">{{ $t('permission.addPermmision') }}</el-button>
 
       <el-table border :props="defaultProps" :data="tableData" row-key="id" :header-cell-style="{ background: '#eee' }" default-expand-all :tree-props="{ children: 'children', hasChildren: 'hasChildren' }">
-        <el-table-column prop="name" label="名称" />
-        <el-table-column prop="code" label="标识" />
-        <el-table-column prop="description" label="描述" />
-        <el-table-column label="操作">
+        <el-table-column prop="name" :label="$t('permission.name')" />
+        <el-table-column prop="code" :label="$t('permission.identifier')" />
+        <el-table-column prop="description" :label="$t('permission.description')" />
+        <el-table-column :label="$t('permission.operation')">
           <template v-slot="{ row }">
-            <el-button v-if="row.type === 1" type="text" @click="addorechoLevel('add', row.id, 2)">添加</el-button>
-            <el-button type="text" @click="addorechoLevel('eitm', row.id)">编辑</el-button>
-            <el-button ref="delPermissions" type="text" @click="handleDelete(row.id)">删除</el-button>
+            <el-button v-if="row.type === 1" type="text" @click="addorechoLevel('add', row.id, 2)">{{ $t('permission.add') }}</el-button>
+            <el-button type="text" @click="addorechoLevel('eitm', row.id)">{{ $t('permission.edit') }}</el-button>
+            <el-button ref="delPermissions" type="text" @click="handleDelete(row.id)">{{ $t('permission.delete') }}</el-button>
           </template>
         </el-table-column>
       </el-table>
 
       <!-- 删除弹出框 -->
       <el-dialog :visible.sync="dialogVisible" width="30%" :before-close="handleClose">
-        <span>确定要删除该数据吗</span>
+        <span>{{ $t('permission.deleteMessage') }}</span>
         <span slot="footer" class="dialog-footer">
-          <el-button @click="dialogVisible = false">取 消</el-button>
-          <el-button type="primary" @click="del()">确 定</el-button>
+          <el-button @click="dialogVisible = false">{{ $t('permission.cancel') }}</el-button>
+          <el-button type="primary" @click="del()">{{ $t('permission.confirm') }}</el-button>
         </span>
       </el-dialog>
 
       <!-- 新增、编辑弹出框 -->
       <el-dialog :title="titleItem" :visible.sync="dialogFormVisible">
         <el-form ref="formDataList" :model="formData" :rules="rules">
-          <el-form-item label="权限名称" :label-width="formLabelWidth" prop="name">
+          <el-form-item :label="$t('permission.permissionName')" :label-width="formLabelWidth" prop="name">
             <el-input v-model="formData.name" autocomplete="off" />
           </el-form-item>
-          <el-form-item label="权限标识" :label-width="formLabelWidth" prop="code">
+          <el-form-item :label="$t('permission.permissionIdentifier')" :label-width="formLabelWidth" prop="code">
             <el-input v-model="formData.code" autocomplete="off" />
           </el-form-item>
-          <el-form-item label="权限描述" :label-width="formLabelWidth">
+          <el-form-item :label="$t('permission.permissionDescription')" :label-width="formLabelWidth">
             <el-input v-model="formData.description" autocomplete="off" />
           </el-form-item>
-          <el-form-item label="开启" :label-width="formLabelWidth">
+          <el-form-item :label="$t('permission.enabled')" :label-width="formLabelWidth">
             <!-- 如果后台返回数字类型，active-value 和 inactive-value 应该动态绑定 -->
             <el-switch v-model="formData.enVisible" active-value="1" inactive-value="0" />
           </el-form-item>
         </el-form>
         <div slot="footer" class="dialog-footer">
-          <el-button type="primary" @click="ManualVerification()">确 定</el-button>
-          <el-button @click="dialogFormVisible = false">取 消</el-button>
+          <el-button type="primary" @click="ManualVerification()">{{ $t('permission.confirm') }}</el-button>
+          <el-button @click="dialogFormVisible = false">{{ $t('permission.cancel') }}</el-button>
         </div>
       </el-dialog>
     </div>
@@ -52,6 +52,7 @@
 </template>
 <script>
 import { getPermissions, deletePermissions, addPermissions, redactPermissions, echoPermissions } from '@/api/permission'
+import i18n from '@/lang'
 // import { logger } from 'runjs/lib/common'
 
 export default {
@@ -77,27 +78,26 @@ export default {
         enVisible: ''
       },
       // 修改表头信息
-      titleItem: '新增权限点',
+      titleItem: i18n.t('permission.addPermissionIndentifier'),
       // 对话框显示隐藏
       dialogTableVisible: false,
       // 控制新增、编辑表单显示隐藏
       dialogFormVisible: false,
       // 弹出框里面表格的位置
-      formLabelWidth: '120px',
+      formLabelWidth: '180px',
       // 用来记录当前点击的用户id
       currentUserId: null,
       // 判断点击的是新增还是编辑
-      actionType: ''
+      actionType: '',
+      // 表单自动验证
+      rules: {
+        name: [{ required: true, message: i18n.t('permission.nameMessage'), trigger: 'blur' }],
+        code: [{ required: true, message: i18n.t('permission.identifierMessage'), trigger: 'blur' }]
+      }
     }
   },
   created() {
     this.treeListForm()
-
-    // 表单自动验证
-    this.rules = {
-      name: [{ required: true, message: '权限名称不能为空', trigger: 'blur' }],
-      code: [{ required: true, message: '权限标识不能为空', trigger: 'blur' }]
-    }
   },
   methods: {
     // 树
@@ -195,9 +195,9 @@ export default {
         // 关闭对话框
         this.dialogFormVisible = false
         // 提示
-        this.$message.success('操作成功')
+        this.$message.success(i18n.t('permission.done'))
       }).catch(() => {
-        this.$message.success('操作失败')
+        this.$message.warning(i18n.t('permission.failed'))
       })
     }
   }

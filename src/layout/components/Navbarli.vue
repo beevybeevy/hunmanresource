@@ -37,7 +37,7 @@
     </div>
     <div class="handle-cropper">
       <div class="scope-btn">
-        <label class="btn" for="uploads">选择头像</label>
+        <label class="btn" for="uploads">{{ $t('avatar.selectAvatar') }}</label>
         <input
           id="uploads"
           type="file"
@@ -45,13 +45,13 @@
           accept="image/png, image/jpeg, image/gif, image/jpg"
           @change="selectImg($event)"
         >
-        <el-button size="mini" type="danger" plain icon="el-icon-zoom-in" @click="changeScale(1)">放大</el-button>
-        <el-button size="mini" type="danger" plain icon="el-icon-zoom-out" @click="changeScale(-1)">缩小</el-button>
-        <el-button size="mini" type="danger" plain @click="rotateLeft">↺ 左旋转</el-button>
-        <el-button size="mini" type="danger" plain @click="rotateRight">↻ 右旋转</el-button>
+        <el-button size="mini" type="danger" plain icon="el-icon-zoom-in" @click="changeScale(1)">{{ $t('avatar.zoomIn') }}</el-button>
+        <el-button size="mini" type="danger" plain icon="el-icon-zoom-out" @click="changeScale(-1)">{{ $t('avatar.zoomOut') }}</el-button>
+        <el-button size="mini" type="danger" plain @click="rotateLeft">↺{{ $t('avatar.rotateLeft') }}</el-button>
+        <el-button size="mini" type="danger" plain @click="rotateRight">↻ {{ $t('avatar.rotateRight') }}</el-button>
       </div>
       <div class="upload-btn">
-        <el-button size="mini" type="success" @click="onConfirm">上传头像 <i
+        <el-button size="mini" type="success" @click="onConfirm">{{ $t('avatar.uploadAvatar') }} <i
           class="el-icon-upload"
         /></el-button>
       </div>

@@ -7,14 +7,14 @@ Vue.use(Router)
 import Layout from '@/layout'
 
 // 引入路由模块
-import approval from './modules/approval'
-import attendance from './modules/attendance'
-import department from './modules/department'
+// import approval from './modules/approval'
+// import attendance from './modules/attendance'
+// import department from './modules/department'
 import employee from './modules/employee'
 import permission from './modules/permission'
 import role from './modules/role'
-import salary from './modules/salary'
-import social from './modules/social'
+// import salary from './modules/salary'
+// import social from './modules/social'
 
 /**
  * Note: sub-menu only appear when route children.length >= 1
@@ -61,7 +61,7 @@ export const constantRoutes = [
       path: 'dashboard',
       name: 'Dashboard',
       component: () => import('@/views/dashboard/index'),
-      meta: { title: '首页', icon: 'dashboard' }
+      meta: { title: 'Dashboard', icon: 'dashboard' }
     }]
   }
 
@@ -70,14 +70,9 @@ export const constantRoutes = [
 
 // 根据用户权限进行动态注册路由表
 export const DynamicRoutingPermission = [
-  approval,
-  attendance,
-  department,
   employee,
   permission,
-  role,
-  salary,
-  social
+  role
 ]
 
 const createRouter = () => new Router({

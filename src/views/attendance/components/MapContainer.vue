@@ -8,7 +8,7 @@
       </div>
       <div class="block" width="300">
         <span class="demonstration">半径</span>
-        <el-slider />
+        <el-slider v-model="radius" :max="1000" />
         <div class="button">
           <el-button size="small" style="margin-left: 300px;" @click="updateShow">取消</el-button>
           <el-button type="primary" size="small" @click="doSubmit">保存</el-button>
@@ -26,13 +26,17 @@ export default {
   data() {
     return {
       list: [],
-      activeId: 1
-
+      activeId: 1,
+      radius: 200
     }
   },
   mounted() {
     this.initAMap()
     this.getMapList()
+  },
+  updated() {
+    this.circle.setRadius(this.radius)
+    // this.map.setFitView()
   },
   methods: {
     initAMap() {
@@ -45,7 +49,7 @@ export default {
           this.map = new AMap.Map('container', {
             // 设置地图容器id
             viewMode: '3D', // 是否为3D地图模式
-            zoom: 11, // 初始化地图级别
+            zoom: 16, // 初始化地图级别
             center: [116.397428, 39.90923] // 初始化地图中心点位置
 
           })
@@ -54,14 +58,24 @@ export default {
             icon: 'https://webapi.amap.com/theme/v1.3/markers/n/mark_b.png',
             position: [116.405467, 39.907761],
             anchor: 'bottom-center'
-          })
+          })// 添加标记点
 
           this.circle = new window.AMap.Circle(
             { strokeColor: 'blue', strokeWeight: 1, strokeOpacity: 0.5,
               fillColor: '#009ffa', fillOpacity: 0.3,
               center: [116.405467, 39.907761],
-              radius: 100
+              radius: 300
             }) // 创建圆
+
+          this.label = new window.AMap.Text({
+            text: `100米范围内打卡`,
+            position: [116.405467, 39.907761],
+            offset: new window.AMap.Pixel(0, 40), // 偏移量
+            style: {
+              color: 'red',
+              fontSize: '20px'
+            }
+          })
 
           this.map.add(this.marker)
           this.map.add(this.circle)
@@ -87,6 +101,7 @@ export default {
       this.map.setCenter(item.point)
       this.circle.setCenter(item.point)
       this.marker.setPosition(item.point)
+      this.AMap.add(this.label)
     }
   }
 }

@@ -6,7 +6,7 @@
           <!-- 姓名 -->
           <el-row>
             <el-col :span="12">
-              <el-form-item label="姓名" prop="username">
+              <el-form-item :label="$t('employee.username')" prop="username">
                 <el-input v-model="FormData.username" size="mini" class="inputW" />
               </el-form-item>
             </el-col>
@@ -14,7 +14,7 @@
           <!-- 工号 -->
           <el-row>
             <el-col :span="12">
-              <el-form-item label="工号" prop="workNumber">
+              <el-form-item :label="$t('employee.workNumber')" prop="workNumber">
                 <!-- 工号禁用  disabled(禁用)  -->
                 <el-input v-model="FormData.workNumber" disabled size="mini" class="inputW" />
               </el-form-item>
@@ -23,12 +23,12 @@
           <!--手机  -->
           <el-row>
             <el-col :span="12">
-              <el-form-item label="手机" prop="mobile">
+              <el-form-item :label="$t('employee.mobile')" prop="mobile">
                 <el-input
                   v-model="FormData.mobile"
                   :disabled="!!$route.params.id"
                   size="mini"
-                  class="inputW"
+                  class="input"
                 />
               </el-form-item>
             </el-col>
@@ -36,7 +36,7 @@
           <!-- 部门 -->
           <el-row>
             <el-col :span="12">
-              <el-form-item label="部门" prop="departmentId">
+              <el-form-item :label="$t('employee.departmentName')" prop="departmentId">
                 <!-- 放置及联部门组件 -->
                 <select-tree v-model="FormData.departmentId" class="inputW" />
               </el-form-item>
@@ -45,10 +45,10 @@
           <!--聘用形式  -->
           <el-row>
             <el-col :span="12">
-              <el-form-item label="聘用形式" prop="formOfEmployment">
-                <el-select v-model="FormData.formOfEmployment" placeholder="请输入聘用形式" size="mini" class="inputW">
-                  <el-option label="正式" :value="1" />
-                  <el-option label="非正式" :value="2" />
+              <el-form-item :label="$t('employee.formOfEmployment')" prop="formOfEmployment">
+                <el-select v-model="FormData.formOfEmployment" :placeholder="$t('employee.inputFormOfEmployment')" size="mini" class="inputW">
+                  <el-option :label="$t('employee.official')" :value="1" />
+                  <el-option :label="$t('employee.unofficial')" :value="2" />
                 </el-select>
               </el-form-item>
             </el-col>
@@ -56,7 +56,7 @@
           <!-- 入职时间 -->
           <el-row>
             <el-col :span="12">
-              <el-form-item label="入职时间" prop="timeOfEntry">
+              <el-form-item :label="$t('employee.transferTime')" prop="timeOfEntry">
                 <el-date-picker
                   v-model="FormData.timeOfEntry"
                   size="mini"
@@ -70,7 +70,7 @@
           <!-- 转正时间 -->
           <el-row>
             <el-col :span="12">
-              <el-form-item label="转正时间" prop="correctionTime">
+              <el-form-item :label="$t('employee.transferTime')" prop="correctionTime">
                 <el-date-picker v-model="FormData.correctionTime" size="mini" type="date" class="inputW" />
               </el-form-item>
             </el-col>
@@ -78,7 +78,7 @@
           <!-- 员工照片 -->
           <el-row>
             <el-col :span="12">
-              <el-form-item label="员工头像" prop="staffPhoto">
+              <el-form-item :label="$t('employee.staffPhoto')" prop="staffPhoto">
                 <image-upload v-model="FormData.staffPhoto" />
               </el-form-item>
             </el-col>
@@ -86,8 +86,8 @@
           <!-- 保存个人信息 -->
           <el-row type="flex">
             <el-col :span="12" style="margin-left:220px">
-              <el-button size="mini" type="primary" @click="$router.push('/employee')">取消</el-button>
-              <el-button size="mini" type="primary" @click="saveData">保存更新</el-button>
+              <el-button size="mini" type="primary" @click="$router.push('/employee')">{{ $t('employee.cancel') }}</el-button>
+              <el-button size="mini" type="primary" @click="saveData">{{ $t('employee.save') }}</el-button>
             </el-col>
           </el-row>
         </el-form>
@@ -101,6 +101,7 @@
 import { addEmployee, editEmployee, getEmployeeDetail } from '@/api/department'
 import SelectTree from './components/select-tree.vue'
 import imageUpload from './components/image-upload.vue'
+import i18n from '@/lang'
 export default {
   components: { SelectTree, imageUpload },
   data() {
@@ -117,26 +118,26 @@ export default {
       rules: {
         // 姓名校验
         username: [
-          { required: true, message: '请输入姓名', trigger: 'blur' },
-          { min: 1, max: 4, message: '姓名为1-4位' }
+          { required: true, message: i18n.t('employee.inputName'), trigger: 'blur' },
+          { min: 1, max: 10, message: i18n.t('employee.nameFormat') }
         ],
         // 手机号校验
         mobile: [
-          { required: true, message: '请输入手机号', trigger: 'blur' },
+          { required: true, message: i18n.t('employee.inputMobile'), trigger: 'blur' },
           { //   pattern 正则表达式
-            pattern: /^1[3-9]\d{9}$/, message: '手机号格式不正确', trigger: 'blur'
+            pattern: /^1[3-9]\d{9}$/, message: i18n.t('employee.wrongMolie'), trigger: 'blur'
           }
         ],
-        formOfEmployment: [{ required: true, message: '请选择聘用形式', trigger: 'blur' }],
-        departmentId: [{ required: true, message: '请选择部门', trigger: 'blur' }],
-        timeOfEntry: [{ required: true, message: '请选择入职时间', trigger: 'blur' }],
+        formOfEmployment: [{ required: true, message: i18n.t('employee.selectHire'), trigger: 'blur' }],
+        departmentId: [{ required: true, message: i18n.t('employee.selectDepartment'), trigger: 'blur' }],
+        timeOfEntry: [{ required: true, message: i18n.t('employee.selectEntryDate'), trigger: 'blur' }],
         correctionTime: [{
-          required: true, message: '请选择转正时间', trigger: 'blur'
+          required: true, message: i18n.t('employee.dateOfBeingRegular'), trigger: 'blur'
         }, {
           validator: (rule, value, callback) => {
             if (this.FormData.timeOfEntry) {
               if (new Date(this.FormData.timeOfEntry) > new Date(value)) {
-                callback(new Error('转正时间不能小于入职时间'))
+                callback(new Error(i18n.t('employee.timeRule')))
                 return
               }
             }
@@ -163,12 +164,12 @@ export default {
           if (this.$route.params.id) {
             // 编辑模式
             await editEmployee(this.FormData)
-            this.$message.success('更新员工成功')
+            this.$message.success(i18n.t('employee.updateDone'))
           } else {
             // 新增模式
             // 校验通过
             await addEmployee(this.FormData)
-            this.$message.success('新增员工成功')
+            this.$message.success(i18n.t('employee.addDone'))
           }
           this.$router.push('/employee')
         }

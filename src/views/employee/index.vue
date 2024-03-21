@@ -8,7 +8,7 @@
           type="text"
           prefix-icon="el-icon-search"
           size="small"
-          placeholder="输入员工姓名全员搜索"
+          :placeholder="$t('employee.search')"
           @input="changeValue"
         />
         <!-- 树形组件 --> <!-- 先初始化首个节点->记录节点->选中节点->记录节点 -->
@@ -33,17 +33,17 @@
       <div class="right">
         <!-- el-row 行 ，type布局模式，justify flex的布局下的水平排列方式-->
         <el-row class="opeate-tools" type="flex" justify="end">
-          <el-button size="mini" @click="canOpen">群发信息</el-button>
-          <el-button size="mini" type="primary" @click="$router.push('/employee/detail')">添加员工</el-button>
+          <el-button size="mini" @click="canOpen">{{ $t('employee.sendToMany') }}</el-button>
+          <el-button size="mini" type="primary" @click="$router.push('/employee/detail')">{{ $t('employee.addEmployee') }}</el-button>
           <!-- @click="showDialog = true;"点击出现导入弹层 -->
-          <el-button size="mini" @click="showDialog = true;">excel导入</el-button>
+          <el-button size="mini" @click="showDialog = true;">{{ $t('employee.importExcel') }}</el-button>
           <el-popover v-model="visible" placement="top" width="160">
-            <p>文件确定导出吗？</p>
+            <p>{{ $t('employee.confirmImportExcel') }}</p>
             <div style="text-align: right; margin: 0">
-              <el-button size="mini" type="text" @click="visible = false">取消</el-button>
-              <el-button type="primary" size="mini" @click="visible = false; exportEmployeeExecel()">确定</el-button>
+              <el-button size="mini" type="text" @click="visible = false">{{ $t('employee.cancel') }}</el-button>
+              <el-button type="primary" size="mini" @click="visible = false; exportEmployeeExecel()">{{ $t('employee.confirm') }}</el-button>
             </div>
-            <el-button slot="reference" class="jiege" size="mini">excel导出</el-button>
+            <el-button slot="reference" class="jiege" size="mini">{{ $t('employee.exportExcel') }}</el-button>
           </el-popover>
         </el-row>
         <!-- 表格组件 -->
@@ -58,31 +58,31 @@
         >
           <!-- 选框 -->
           <el-table-column type="selection" width="55" />
-          <el-table-column prop="staffPhoto" align="center" label="头像">
+          <el-table-column prop="staffPhoto" align="center" :label="$t('employee.avatar')">
             <!-- 作用域插槽 -->
             <template v-slot="{ row }">
               <el-avatar v-if="row.staffPhoto" :src="row.staffPhoto" :size="30" />
               <span v-else class="username">{{ row.username.charAt(0) }}</span>
             </template>
           </el-table-column>
-          <el-table-column prop="username" label="姓名" />
-          <el-table-column prop="mobile" label="手机号" sortable />
-          <el-table-column prop="workNumber" label="工号" sortable />
-          <el-table-column prop="formOfEmployment" label="聘用形式">
+          <el-table-column prop="username" :label="$t('employee.username')" />
+          <el-table-column prop="mobile" :label="$t('employee.mobile')" sortable />
+          <el-table-column prop="workNumber" :label="$t('employee.workNumber')" sortable />
+          <el-table-column prop="formOfEmployment" :label="$t('employee.formOfEmployment')">
             <template v-slot="{ row }">
-              <span v-if="row.formOfEmployment === 1">正式</span>
-              <span v-else-if="row.formOfEmployment === 2">非正式</span>
-              <span v-else>无</span>
+              <span v-if="row.formOfEmployment === 1">{{ $t('employee.official') }}</span>
+              <span v-else-if="row.formOfEmployment === 2">{{ $t('employee.unofficial') }}</span>
+              <span v-else>{{ $t('employee.null') }}</span>
             </template>
           </el-table-column>
-          <el-table-column prop="departmentName" label="部门" />
-          <el-table-column prop="timeOfEntry" label="入职时间" sortable />
-          <el-table-column label="操作" width="280px">
+          <el-table-column prop="departmentName" :label="$t('employee.departmentName')" />
+          <el-table-column prop="timeOfEntry" :label="$t('employee.timeOfEntry')" sortable />
+          <el-table-column :label="$t('employee.operation')" width="280px">
             <template v-slot="{ row }">
-              <el-button size="mini" type="text" @click="$router.push(`/employee/detail/${row.id}`)">查看</el-button>
-              <el-button size="mini" type="text" @click="getRole(row.id)">角色</el-button>
-              <el-popconfirm title="确认删除该行数据吗？" @onConfirm="confirmDel(row.id)">
-                <el-button slot="reference" style="margin-left:10px" size="mini" type="text">删除</el-button>
+              <el-button size="mini" type="text" @click="$router.push(`/employee/detail/${row.id}`)">{{ $t('employee.viewDetails') }}</el-button>
+              <el-button size="mini" type="text" @click="getRole(row.id)">{{ $t('employee.role') }}</el-button>
+              <el-popconfirm :title="$t('employee.deleteMessage')" @onConfirm="confirmDel(row.id)">
+                <el-button slot="reference" style="margin-left:10px" size="mini" type="text">{{ $t('employee.delete') }}</el-button>
               </el-popconfirm>
             </template>
           </el-table-column>
@@ -90,7 +90,7 @@
         <!-- 分页 -->
         <!--  align 是flex布局下水平排列方式 -->
         <el-row style="height: 60px" align="middle" type="flex" justify="end">
-          <span style="font-size: 13px;color: #606266;">共 {{ total }} 条</span>
+          <span style="font-size: 13px;color: #606266;">{{ $t('employee.total')+total }} </span>
           <el-pagination
             layout="prev, pager, next"
             :total="total"
@@ -106,7 +106,7 @@
     <!-- 引入导入弹框 -->
     <ImportExcel :show-excel-dialog.sync="showDialog" />
     <!-- 群发信息的弹框 -->
-    <el-dialog title="群发信息" :visible.sync="dialogFormVisible">
+    <el-dialog :title="$t('employee.sendToMany')" :visible.sync="dialogFormVisible">
       <el-form ref="messageBox">
         <el-form-item>
           <div class="inputTag">
@@ -115,18 +115,18 @@
             </el-tag>
           </div>
         </el-form-item>
-        <el-form-item label="消息等级">
-          <el-select v-model="selectedOption" placeholder="请选择">
+        <el-form-item :label="$t('employee.messageLevel')">
+          <el-select v-model="selectedOption" :placeholder="$t('employee.pleaseSelect')">
             <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value" />
           </el-select>
         </el-form-item>
-        <el-form-item label="通知内容">
+        <el-form-item :label="$t('employee.messageContent')">
           <el-input v-model="inputValue" clearable class="textarea" />
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
-        <el-button @click="dialogFormVisible = false">取 消</el-button>
-        <el-button type="primary" @click="handleSubmit">确 定</el-button>
+        <el-button @click="dialogFormVisible = false">{{ $t('employee.cancel') }}</el-button>
+        <el-button type="primary" @click="handleSubmit">{{ $t('employee.confirm') }}</el-button>
       </div>
     </el-dialog>
 
@@ -135,6 +135,7 @@
 
 <script>
 import FileSaver from 'file-saver'
+import i18n from '@/lang'
 import {
   getDepartment, // 组织架构
   transListToTreeData, // 树型
@@ -178,10 +179,10 @@ export default {
       selectedRows: [], // 点击复选框被选中的对象
       selectedOption: '',
       options: [
-        { label: '通知消息', value: 1 },
-        { label: '提示消息', value: 2 },
-        { label: '重要消息', value: 3 },
-        { label: '紧急消息', value: 4 }
+        { label: i18n.t('employee.notification'), value: 1 },
+        { label: i18n.t('employee.prompt'), value: 2 },
+        { label: i18n.t('employee.important'), value: 3 },
+        { label: i18n.t('employee.urgent'), value: 4 }
       ],
       inputValue: '',
       formData: {},
@@ -252,7 +253,7 @@ export default {
       // 删除最后一页最后一项，默认返回前一页
       if (this.list.length === 1 && this.queryParams.page > 1) this.queryParams.page--
       this.getEmployeeList()
-      this.$message.success('删除员工成功')
+      this.$message.success(i18n.t('employee.deleteDone'))
     },
     // 导出excel文件
     async exportEmployeeExecel() {
@@ -282,7 +283,7 @@ export default {
         this.dialogFormVisible = true
         // console.log(11)
       } else {
-        this.$message.warning('请选择联系人')
+        this.$message.warning(i18n.t('employee.selectStaff'))
         return
       }
     },
@@ -304,7 +305,7 @@ export default {
       }
       console.log(this.formData)
       await submitMessage(this.formData)
-      this.$message.success('发送信息成功')
+      this.$message.success(i18n.t('employee.sendDone'))
       this.getEmployeeList()
       this.selectedOption = ''
       this.inputValue = ''

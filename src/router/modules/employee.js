@@ -7,7 +7,7 @@ export default {
     name: 'employee',
     component: () => import('@/views/employee'),
     meta: {
-      title: '员工',
+      title: 'Employee',
       icon: 'people'
     }
   }, {
@@ -15,7 +15,7 @@ export default {
     component: () => import('@/views/employee/detail.vue'),
     hidden: true, // 表示隐藏在左侧菜单
     meta: {
-      title: '员工详情' // 显示在导航的文本
+      title: 'Employee Details' // 显示在导航的文本
     }
   }]
 }

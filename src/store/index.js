@@ -13,7 +13,21 @@ const store = new Vuex.Store({
     settings,
     user
   },
-  getters
+  getters,
+  state: {
+    locale: 'en'
+  },
+  mutations: {
+    setLocale(state, locale) {
+      state.locale = locale
+    }
+  },
+  actions: {
+    changeLocale({ commit }, locale) {
+      commit('setLocale', locale)
+    }
+  }
+
 })
 
 export default store

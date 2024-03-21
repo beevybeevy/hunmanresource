@@ -19,16 +19,16 @@
         >
         <div class="drop">
           <i class="el-icon-upload" />
-          <el-button type="text" @click="getTemplate">下载导入模板</el-button>
-          <span>将文件拖到此处或
-            <el-button type="text" @click="handleUpload">点击上传</el-button>
+          <el-button type="text" @click="getTemplate">{{ $t('employee.downloadSample') }}</el-button>
+          <span>{{ $t('employee.dragFile') }}
+            <el-button type="text" @click="handleUpload">{{ $t('employee.dragFile') }}</el-button>
           </span>
         </div>
       </div>
     </el-row>
     <el-row type="flex" justify="end">
       <!-- update:props属性名，值 直接修改 .sync修饰符的属性值 -->
-      <el-button size="mini" type="primary" @click="$emit('update:showExcelDialog', false)">取消</el-button>
+      <el-button size="mini" type="primary" @click="$emit('update:showExcelDialog', false)">{{ $t('employee.cancel') }}</el-button>
     </el-row>
   </el-dialog>
 </template>

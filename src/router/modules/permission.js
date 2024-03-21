@@ -7,7 +7,7 @@ export default {
     name: 'permission',
     component: () => import('@/views/permission'),
     meta: {
-      title: '权限',
+      title: 'Permission',
       icon: 'lock'
     }
   }]

@@ -2,7 +2,20 @@
   <div class="login-container">
     <div class="logo" />
     <div class="form">
-      <h1>登录</h1>
+
+      <div class="loginWord"> <h1>{{ $t('login.login') }}</h1>
+        <el-dropdown class="lang">
+          <span class="el-dropdown-link">
+            Language<i class="el-icon-arrow-down el-icon--right" />
+          </span>
+          <el-dropdown-menu slot="dropdown">
+            <el-dropdown-item @click.native="switchToChinese('zh')">中文</el-dropdown-item>
+            <el-dropdown-item @click.native="switchToChinese('en')">English</el-dropdown-item>
+            <el-dropdown-item @click.native="switchToChinese('de')">Deutsch</el-dropdown-item>
+          </el-dropdown-menu>
+        </el-dropdown></div>
+
+      </el-dropdown>
       <el-card shadow="never" class="login-card">
         <!--登录表单-->
         <!-- el-form > el-form-item > el-input -->
@@ -12,46 +25,48 @@
           <img id="qrcode" :src="qrCodeDataURL" alt="QR Code">
           <div v-show="Timoutlayer" class="qrcode_layer Timeout">
             <div>
-              <span>点击刷新 </span> <i class="el-icon-refresh-left" style="color:#f56c6c;" @click="refreshQR" /></div>
+              <span>{{ $t('login.refresh') }}</span> <i class="el-icon-refresh-left" style="color:#f56c6c;" @click="refreshQR" /></div>
           </div>
           <div v-show="SuccessLogInlayer" class="qrcode_layer Timeout">
             <div>
-              <span>扫码成功 </span> <i class="el-icon-check" style="color:#76c84d;" /></div>
+              <span>{{ $t('login.qrcode') }}</span> <i class="el-icon-check" style="color:#76c84d;" /></div>
           </div>
           <div v-show="CancelLayer" class="qrcode_layer Timeout">
             <div>
-              <span>取消登录 </span> <i class="el-icon-refresh-left" style="color:#f56c6c;" @click="refreshQR" /></div>
+              <span>{{ $t('login.cancelLogin') }} </span> <i class="el-icon-refresh-left" style="color:#f56c6c;" @click="refreshQR" /></div>
           </div>
         </div>
 
         <!-- 手机号登录 -->
         <el-form v-else ref="form" :model="loginForm" :rules="loginRules">
           <el-form-item prop="mobile">
-            <el-input v-model="loginForm.mobile" placeholder="请输入手机号" />
+            <el-input v-model="loginForm.mobile" :placeholder="$t('login.cancelLinputMobileogin')" />
           </el-form-item>
           <el-form-item prop="password">
-            <el-input v-model="loginForm.password" show-password placeholder="请输入密码" />
+            <el-input v-model="loginForm.password" show-password :placeholder="$t('login.inputPassword')" />
           </el-form-item>
           <el-form-item prop="isAgree">
             <el-checkbox v-model="loginForm.isAgree">
-              用户平台使用协议
+              {{ $t('login.userTerm') }}
             </el-checkbox>
           </el-form-item>
           <el-form-item>
-            <el-button style="width:350px" type="primary" @click="login">登录</el-button>
+            <el-button style="width:350px" type="primary" @click="login">{{ $t('login.login') }}</el-button>
           </el-form-item>
         </el-form>
         <div class="loginButton">
-          <el-button @click="changeLoginWay1">手机号登录</el-button>
-          <el-button @click="changeLoginWay2">扫码登陆</el-button>
+          <el-button @click="changeLoginWay1">{{ $t('login.mobileLogin') }}</el-button>
+          <el-button @click="changeLoginWay2">{{ $t('login.qrcodeLogin') }}</el-button>
         </div>
       </el-card>
     </div>
   </div></template>
 <script>
 import { getQRCode, getQRCodeStatus } from '@/api/user'
+
 // import { setToken } from '@/utils/auth'
 import QRCode from 'qrcode'
+import i18n from '@/lang'
 export default {
   name: 'Login',
   data() {
@@ -71,22 +86,22 @@ export default {
       loginRules: {
         mobile: [{
           required: true,
-          message: '请输入手机号',
+          message: i18n.t('login.inputMobile'),
           trigger: 'blur'
         }, {
           pattern: /^1[3-9]\d{9}$/,
-          message: '手机号格式不正确',
+          message: i18n.t('login.mobileFormat'),
           trigger: 'blur'
 
         }],
         password: [{
           required: true,
-          message: '请输入密码',
+          message: i18n.t('login.inputPassword'),
           trigger: 'blur'
         }, {
           min: 6,
           max: 16,
-          message: '密码长度应该为6-16位之间',
+          message: i18n.t('login.passwordFormat'),
           trigger: 'blur'
 
         }],
@@ -97,10 +112,23 @@ export default {
             // value检查的数据 true/false
             // callback 函数 执行这个函数
             // 成功执行callback 失败也执行callback(错误对象 new Error(错误信息))
-            value ? callback() : callback(new Error('没有勾选用户平台协议'))
+            value ? callback() : callback(new Error(i18n.t('login.selectUserTerm')))
           }
         }]
       }
+    }
+  },
+  computed: {
+    locale() {
+      // console.log(this.$store.state.locale)
+      return this.$store.state.locale
+    }
+  },
+  watch: {
+    locale(newVal) {
+      this.$i18n.locale = newVal
+      console.log(this.$i18n.locale)
+      // location.reload()
     }
   },
   methods: {
@@ -164,6 +192,10 @@ export default {
       this.SuccessLogInlayer = false
       this.CancelLayer = false
       this.changeLoginWay2()
+    },
+    switchToChinese(lang) {
+      // console.log(lang)
+      this.$store.dispatch('changeLocale', lang)
     }
   }
 }
@@ -181,7 +213,7 @@ export default {
 
 .loginButton {
   width: 350px;
-  height: 280px;
+  height: 50px;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -275,4 +307,13 @@ export default {
     }
   }
 }
+.loginWord{
+  position: relative;
+  .lang{
+   position: absolute;
+   right: 80px;
+   top:20px
+}
+}
+
 </style>

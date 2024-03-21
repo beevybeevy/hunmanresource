@@ -1,6 +1,6 @@
 <template>
   <div>
-    <el-dialog :visible.sync="centerDialogVisible" left title="分配角色">
+    <el-dialog :visible.sync="centerDialogVisible" left :title="$t('employee.roleDistribute')">
       <!-- 弹层内容 -->
       <!-- checkbox -->
       <el-checkbox-group v-model="roleIds">
@@ -11,8 +11,8 @@
       </el-checkbox-group>
       <el-row slot="footer" type="flex" justify="center">
         <el-col :span="6">
-          <el-button type="primary" size="mini" @click="alloctRole">确定</el-button>
-          <el-button size="mini" @click="centerDialogVisible = false">取消</el-button>
+          <el-button type="primary" size="mini" @click="alloctRole">{{ $t('employee.confirm') }}</el-button>
+          <el-button size="mini" @click="centerDialogVisible = false">{{ $t('employee.cancel') }}</el-button>
         </el-col>
       </el-row>
     </el-dialog>
@@ -21,6 +21,7 @@
 
 <script>
 import { getEnableRoleList, getRole, assignRole } from '@/api/department'
+import i18n from '@/lang'
 export default {
   name: 'GetAvailable',
   data() {
@@ -51,7 +52,7 @@ export default {
         id: this.currentId,
         roleIds: this.roleIds
       })
-      this.$message.success('分配用户角色成功')
+      this.$message.success(i18n.t('employee.successDistribute'))
       this.centerDialogVisible = false
     }
   }

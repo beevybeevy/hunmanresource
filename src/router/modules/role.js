@@ -7,7 +7,7 @@ export default {
     name: 'role',
     component: () => import('@/views/role'),
     meta: {
-      title: '角色',
+      title: 'Role',
       icon: 'setting'
     }
   }]

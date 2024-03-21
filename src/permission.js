@@ -13,6 +13,7 @@ const whiteList = ['/login', '/404']
 router.beforeEach(async(to, from, next) => {
   nprogress.start()
   if (store.getters.token) {
+    console.log('有token')
     if (!store.getters.userId) {
       await store.dispatch('user/getUserInfo', routes)
       // 注册动态路由的代码 => 获取用户资料之后，跳转首页之前
